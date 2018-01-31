@@ -1,5 +1,5 @@
 import numpy as np
-import lib.knn_classifier as knn
+import classifier.knn_classifier as knn
 
 class_one = 1
 class_one_training = "/Users/harpreetsingh/github/stats-learning/k-nearest-neighbors/resources/group_3/train1.txt"

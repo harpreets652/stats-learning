@@ -5,3 +5,4 @@ Python packages uses
 
 References
 * Data used: https://web.stanford.edu/~hastie/ElemStatLearn/
+* Digits dataset

@@ -1,30 +1,14 @@
 import numpy as np
-from random import shuffle
 
 
 class LinearRegClassifier:
     """
-    Linear regression classifier using the normal equation: inverse(X'X + lambda*I) * X'y = beta
+    Linear regression model using the normal equation: inverse(X'X + lambda*I) * X'Y = beta
     """
 
-    def __init__(self, pos_class_data, neg_class_data, regularization_param):
-        self.pos_class = pos_class_data[0]
-        self.neg_class = neg_class_data[0]
-
-        # load data X and shuffle
-        pos_data = self.__load_training_data_with_label(1, pos_class_data[1])
-        neg_data = self.__load_training_data_with_label(-1, neg_class_data[1])
-        training_data = pos_data + neg_data
-        shuffle(training_data)
-
-        labels = []
-        train_data = []
-        for d in training_data:
-            labels.append(d[0])
-            train_data.append(d[1])
-
-        y = np.array(labels)
-        x = np.array(train_data)
+    def __init__(self, training_y, training_x, regularization_param):
+        y = training_y
+        x = training_x
 
         # add additional column of ones to X at index 0
         x = np.insert(x, 0, 1, axis=1)
@@ -50,42 +34,23 @@ class LinearRegClassifier:
 
         # [n+1 x n+1] * [n+1 x 1] = [n+1 x 1]
         self.beta = np.matmul(first_term, xTy)
-
         return
 
-    @staticmethod
-    def __load_training_data(class_label, file_name):
-        label = []
-        features = []
-
-        with open(file_name, 'r') as file:
-            for row in file:
-                data_string = row.strip().split(',')
-                data = []
-                for i in range(len(data_string)):
-                    data.append(float(data_string[i]))
-
-                label.append(class_label)
-                features.append(data)
-
-        return np.array(label), np.array(features)
-
-    @staticmethod
-    def __load_training_data_with_label(pos_class_label, pos_class_file_name):
-        training_data = []
-        with open(pos_class_file_name, 'r') as file:
-            for row in file:
-                data_string = row.strip().split(',')
-                data = []
-                for i in range(len(data_string)):
-                    data.append(float(data_string[i]))
-
-                training_data.append((pos_class_label, np.array(data)))
-
-        return training_data
-
     def classify(self, new_data_point):
+        """
+        :param new_data_point: nxm matrix of features
+        :returns: predicted scalar value
+        :rtype: float
+        """
         x = np.insert(new_data_point, 0, 1, axis=0)
-        y_hat = np.matmul(x.T, self.beta)
 
-        return self.pos_class if y_hat > 0.5 else self.neg_class
+        return np.matmul(x.T, self.beta)
+
+    def classify_batch(self, data_points):
+        """
+        :param data_points: nxm matrix of features
+        :returns: vector of predicted values
+        :rtype: np.array
+        """
+        x = np.insert(data_points, 0, 1, axis=1)
+        return np.matmul(x, self.beta)

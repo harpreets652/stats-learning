@@ -39,6 +39,9 @@ class LinearRegClassifier:
         # regularization = [n+1 x n+1]
         regularization_term = np.multiply(regularization_param, np.eye(x.shape[1]))
 
+        # if det(a) = 0, then it does not have an inverse
+        # print("determinant of first term: ", np.linalg.det(np.add(xTx, regularization_term)))
+
         # inverse([n+1 x n+1] + [n+1 x n+1]) = [n+1 x n+1]
         first_term = np.linalg.inv(np.add(xTx, regularization_term))
 

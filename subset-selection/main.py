@@ -4,7 +4,7 @@ import itertools
 import classifier.lin_reg_classifier as lrc
 
 training_data_file = "/Users/harpreetsingh/github/stats-learning/subset-selection/resources/data.txt"
-output_file_name = "/Users/harpreetsingh/github/stats-learning/subset-selection/results/"
+output_file_name = "/Users/harpreetsingh/github/stats-learning/subset-selection/results/results"
 
 
 def load_training_data(file_name):
@@ -36,11 +36,9 @@ def run_test_data(lin_reg_classifier, test_set_outputs, test_set_features, featu
 
 
 def save_results_to_csv(outputs, file_name):
-    performance_metrics_header = "feature subset,RSS"
-
-    with open(file_name + ".csv") as file:
+    with open(file_name + ".csv", 'w+') as file:
         writer = csv.writer(file, lineterminator='\n')
-        writer.writerow(performance_metrics_header)
+        writer.writerow(["feature subset", "RSS"])
         writer.writerows(outputs)
 
     return
@@ -54,7 +52,7 @@ training_output, training_features, testing_output, testing_features = load_trai
 results = []
 # k in range 1 to 9
 # n = 8
-for k in range(1, 2):
+for k in range(1, 9):
     for combo in itertools.combinations(range(8), k):
         classifier = lrc.LinearRegClassifier(training_output, training_features[:, combo], 0.0)
         rss = run_test_data(classifier, testing_output, testing_features, combo)

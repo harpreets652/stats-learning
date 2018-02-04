@@ -88,4 +88,4 @@ class LinearRegClassifier:
         x = np.insert(new_data_point, 0, 1, axis=0)
         y_hat = np.matmul(x.T, self.beta)
 
-        return self.pos_class if y_hat > 0.5 else self.neg_class
+        return self.pos_class if y_hat > 0.0 else self.neg_class

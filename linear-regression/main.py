@@ -1,11 +1,11 @@
 import numpy as np
 import classifier.lin_reg_classifier as lrc
 
-class_one = 0
-class_one_training = "/Users/harpreetsingh/github/stats-learning/k-nearest-neighbors/resources/group_1/train0.txt"
-class_two = 3
-class_two_training = "/Users/harpreetsingh/github/stats-learning/k-nearest-neighbors/resources/group_1/train3.txt"
-output_file_prefix = "/Users/harpreetsingh/github/stats-learning/linear-regression/results/0_vs_3"
+class_one = 1
+class_one_training = "/Users/harpreetsingh/github/stats-learning/k-nearest-neighbors/resources/group_3/train1.txt"
+class_two = 9
+class_two_training = "/Users/harpreetsingh/github/stats-learning/k-nearest-neighbors/resources/group_3/train9.txt"
+output_file_prefix = "/Users/harpreetsingh/github/stats-learning/linear-regression/results/1_vs_9"
 
 
 def load_test_data(file_name):
@@ -130,7 +130,10 @@ test_data = load_test_data("/Users/harpreetsingh/github/stats-learning/k-nearest
 
 performance_metrics = []
 confusion_matrices = []
-for regularization_param in np.arange(0.0, 10.5, 0.5):
+regularization_param_values = np.append(np.arange(0.2, 10.6, 0.2),
+                                        np.arange(20, 110, 10))
+
+for regularization_param in regularization_param_values:
     classifier = lrc.LinearRegClassifier([class_one, class_one_training],
                                          [class_two, class_two_training],
                                          regularization_param)

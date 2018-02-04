@@ -1,4 +1,5 @@
 import numpy as np
+from random import shuffle
 
 
 class LinearRegClassifier:
@@ -10,12 +11,20 @@ class LinearRegClassifier:
         self.pos_class = pos_class_data[0]
         self.neg_class = neg_class_data[0]
 
-        # load data X
-        label_pos, features_pos = self.__load_training_data(1, pos_class_data[1])
-        label_neg, features_neg = self.__load_training_data(-1, neg_class_data[1])
+        # load data X and shuffle
+        pos_data = self.__load_training_data_with_label(1, pos_class_data[1])
+        neg_data = self.__load_training_data_with_label(-1, neg_class_data[1])
+        training_data = pos_data + neg_data
+        shuffle(training_data)
 
-        y = np.concatenate([label_pos, label_neg])
-        x = np.concatenate([features_pos, features_neg])
+        labels = []
+        train_data = []
+        for d in training_data:
+            labels.append(d[0])
+            train_data.append(d[1])
+
+        y = np.array(labels)
+        x = np.array(train_data)
 
         # add additional column of ones to X at index 0
         x = np.insert(x, 0, 1, axis=1)
@@ -57,6 +66,20 @@ class LinearRegClassifier:
                 features.append(data)
 
         return np.array(label), np.array(features)
+
+    @staticmethod
+    def __load_training_data_with_label(pos_class_label, pos_class_file_name):
+        training_data = []
+        with open(pos_class_file_name, 'r') as file:
+            for row in file:
+                data_string = row.strip().split(',')
+                data = []
+                for i in range(len(data_string)):
+                    data.append(float(data_string[i]))
+
+                training_data.append((pos_class_label, np.array(data)))
+
+        return training_data
 
     def classify(self, new_data_point):
         x = np.insert(new_data_point, 0, 1, axis=0)

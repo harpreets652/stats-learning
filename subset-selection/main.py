@@ -2,6 +2,7 @@ import csv
 import numpy as np
 import itertools
 import classifier.lin_reg_classifier as lrc
+import matplotlib.pyplot as plt
 
 training_data_file = "/Users/harpreetsingh/github/stats-learning/subset-selection/resources/data.txt"
 output_file_name = "/Users/harpreetsingh/github/stats-learning/subset-selection/results/results"
@@ -44,6 +45,17 @@ def save_results_to_csv(outputs, file_name):
     return
 
 
+def visualize_results(subset_results):
+    bucketed_results = []
+    for r in subset_results:
+        bucketed_results.append((len(r[0]), r[1]))
+
+    plot_data = np.array(bucketed_results)
+    plt.scatter(plot_data[:, 0], plot_data[:, 1])
+    plt.show()
+    return
+
+
 # ==================================================================================================================
 
 training_output, training_features, testing_output, testing_features = load_training_data(training_data_file)
@@ -59,4 +71,5 @@ for k in range(1, 9):
         print(k, ": ", combo, ", RSS: ", rss)
         results.append((combo, rss))
 
+visualize_results(results)
 save_results_to_csv(results, output_file_name)

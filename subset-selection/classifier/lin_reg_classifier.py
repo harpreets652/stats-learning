@@ -18,7 +18,7 @@ class LinearRegClassifier:
 
         # normal equation
         # [n+1 x n] * [n x n+1] = [n+1 x n+1]
-        xTx = np.matmul(x.T, x)
+        xTx = np.dot(x.T, x)
 
         # regularization = [n+1 x n+1]
         regularization_term = np.multiply(regularization_param, np.eye(x.shape[1]))
@@ -30,10 +30,10 @@ class LinearRegClassifier:
         first_term = np.linalg.inv(np.add(xTx, regularization_term))
 
         # [n+1 x n] * [n x 1] = [n+1 x 1]
-        xTy = np.matmul(x.T, y)
+        xTy = np.dot(x.T, y)
 
         # [n+1 x n+1] * [n+1 x 1] = [n+1 x 1]
-        self.beta = np.matmul(first_term, xTy)
+        self.beta = np.dot(first_term, xTy)
         return
 
     def classify(self, new_data_point):
@@ -44,7 +44,7 @@ class LinearRegClassifier:
         """
         x = np.insert(new_data_point, 0, 1, axis=0)
 
-        return np.matmul(x.T, self.beta)
+        return np.dot(x.T, self.beta)
 
     def classify_batch(self, data_points):
         """
@@ -53,4 +53,4 @@ class LinearRegClassifier:
         :rtype: np.array
         """
         x = np.insert(data_points, 0, 1, axis=1)
-        return np.matmul(x, self.beta)
+        return np.dot(x, self.beta)

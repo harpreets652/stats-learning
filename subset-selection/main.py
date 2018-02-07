@@ -64,10 +64,15 @@ training_output, training_features, testing_output, testing_features = load_trai
 results = []
 # k in range 1 to 9
 # n = 8
-for k in range(1, 9):
+for k in range(0, 9):
     for combo in itertools.combinations(range(8), k):
         classifier = lrc.LinearRegClassifier(training_output, training_features[:, combo], 0.0)
-        rss = run_test_data(classifier, testing_output, testing_features, combo)
+
+        rss = run_test_data(classifier,
+                            training_output,
+                            training_features,
+                            combo)
+
         print(k, ": ", combo, ", RSS: ", rss)
         results.append((combo, rss))
 

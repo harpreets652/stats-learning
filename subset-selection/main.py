@@ -3,6 +3,7 @@ import numpy as np
 import itertools
 import classifier.lin_reg_classifier as lrc
 import matplotlib.pyplot as plt
+from collections import defaultdict
 
 training_data_file = "/Users/harpreetsingh/github/stats-learning/subset-selection/resources/data.txt"
 output_file_name = "/Users/harpreetsingh/github/stats-learning/subset-selection/results/results"
@@ -46,12 +47,26 @@ def save_results_to_csv(outputs, file_name):
 
 
 def visualize_results(subset_results):
-    bucketed_results = []
+    plotting_data_format = []
+    buckets = defaultdict(list)
     for r in subset_results:
-        bucketed_results.append((len(r[0]), r[1]))
+        plotting_data_format.append((len(r[0]), r[1]))
+        buckets[len(r[0])].append(r[1])
 
-    plot_data = np.array(bucketed_results)
-    plt.scatter(plot_data[:, 0], plot_data[:, 1])
+    min_rss = []
+    for bucket in buckets.values():
+        min_rss.append((min(bucket)))
+
+    plot_data = np.array(plotting_data_format)
+    plt.scatter(plot_data[:, 0], plot_data[:, 1], facecolors='none', linewidths=0.5, edgecolors='b', s=10)
+    x1, x2, y1, y2 = plt.axis()
+    plt.axis((x1, x2, 0, 100))
+    plt.plot(np.array(min_rss), 'r-', linewidth=0.5)
+
+    plt.title("All Models of Subsets of Features")
+    plt.xlabel("Feature Subset Size")
+    plt.ylabel("RSS (Training Data)")
+
     plt.show()
     return
 

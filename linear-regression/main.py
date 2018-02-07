@@ -130,7 +130,7 @@ test_data = load_test_data("/Users/harpreetsingh/github/stats-learning/k-nearest
 
 performance_metrics = []
 confusion_matrices = []
-regularization_param_values = np.append(np.arange(0.2, 10.6, 0.2),
+regularization_param_values = np.append(np.arange(0.0, 10.6, 0.2),
                                         np.arange(20, 110, 10))
 
 for regularization_param in regularization_param_values:

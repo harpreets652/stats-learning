@@ -1,11 +1,6 @@
 import numpy as np
 import classifier.gaussian_classifier as gauss
 
-class_one = 1
-class_one_training = "/Users/harpreetsingh/github/stats-learning/k-nearest-neighbors/resources/group_3/train1.txt"
-class_two = 9
-class_two_training = "/Users/harpreetsingh/github/stats-learning/k-nearest-neighbors/resources/group_3/train9.txt"
-
 training_data_files = {0: "/Users/harpreetsingh/github/stats-learning/gaussian-classifier/resources/train0.txt",
                        1: "/Users/harpreetsingh/github/stats-learning/gaussian-classifier/resources/train1.txt",
                        2: "/Users/harpreetsingh/github/stats-learning/gaussian-classifier/resources/train2.txt",
@@ -18,6 +13,18 @@ training_data_files = {0: "/Users/harpreetsingh/github/stats-learning/gaussian-c
                        9: "/Users/harpreetsingh/github/stats-learning/gaussian-classifier/resources/train9.txt"}
 
 output_file_prefix = "/Users/harpreetsingh/github/stats-learning/linear-regression/results/1_vs_9"
+
+
+def run_test_data(test_data_set, gauss_classifier):
+    # row indexed by the test label, column indexed by predicted class
+    confusion_matrix = np.zeros((10, 10))
+
+    for p in test_data_set:
+        predicted_class = gauss_classifier.classify(p[1])
+        confusion_matrix[p[0]][predicted_class] += 1
+        print("p: ", p[0])
+
+    return confusion_matrix
 
 
 def load_test_data(file_name):
@@ -40,11 +47,13 @@ def load_test_data(file_name):
 
 # ==================================================================================================================
 
-# test_data = load_test_data("/Users/harpreetsingh/github/stats-learning/gaussian-classifier/resources/test.txt")
+test_data = load_test_data("/Users/harpreetsingh/github/stats-learning/gaussian-classifier/resources/test.txt")
 
-classifier = gauss.GaussianClassifier(0, 0.001)
+classifier = gauss.GaussianClassifier(0, 0.1)
 
 for label, file in training_data_files.items():
     classifier.add_class(label, file)
 
-print("done!!")
+confusion = run_test_data(test_data, classifier)
+
+print("done!! \n", confusion)

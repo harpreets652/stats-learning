@@ -48,7 +48,7 @@ class GaussianClassifier:
     def classify(self, new_data_point):
         class_probabilities = {}
 
-        for label, model in self.class_models:
+        for label, model in self.class_models.items():
             denominator_1 = ((2 * np.pi) ** (new_data_point.shape[0] / 2))
             denominator_2 = np.sqrt(np.linalg.det(model['cov']))
             denominator = denominator_1 * denominator_2

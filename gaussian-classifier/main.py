@@ -46,6 +46,7 @@ def load_test_data(file_name):
     return test_data_buffer
 
 
+# todo: for this save csv: class,accuracy,missclassification error
 def run_default_classifier(test_data_set):
     classifier = gauss.DefaultGaussianClassifier(0.1)
 
@@ -59,13 +60,13 @@ def run_default_classifier(test_data_set):
     return
 
 
+# todo: for this, graph num dimensions versus error (of the entire testing set, combining all class totals)
 def run_pca_classifier(test_data_set):
-    classifier = pca.PcaGaussianClassifier(0.1, 16)
+    classifier = pca.PcaGaussianClassifier(0.1, 25)
 
     for label, file in training_data_files.items():
         classifier.add_class(label, file)
 
-    # todo: p(x), x - mu doesn't work anymore: x is 16d while mean is 256
     confusion = run_test_data(test_data_set, classifier)
 
     print("done!! \n", confusion)

@@ -33,7 +33,11 @@ class AbstractGaussianClassifier:
 
         return np.array(features)
 
-    def _calc_probability(self, mean, covariance, centered_point):
+    def _calc_probability(self, covariance, centered_point):
+        """
+
+        :rtype:
+        """
         denominator_1 = ((2 * np.pi) ** (centered_point.shape[0] / 2))
         denominator_2 = np.sqrt(np.linalg.det(covariance))
         denominator = denominator_1 * denominator_2

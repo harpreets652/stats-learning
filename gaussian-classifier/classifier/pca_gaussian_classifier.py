@@ -24,9 +24,7 @@ class PcaGaussianClassifier(classifier.abstract_gaussian_classifier.AbstractGaus
         mean_vec = training_data_mat.mean(axis=0)
 
         # find the covariance; row var=False because each column represents a variable, with rows as observations
-        # todo: is the regularization parameter necessary?
-        regularization_term = np.multiply(self.regularization_param, np.eye(training_data_mat.shape[1]))
-        cov_mat = np.cov(training_data_mat, rowvar=False) + regularization_term
+        cov_mat = np.cov(training_data_mat, rowvar=False)
 
         # find the eigen vectors/values
         eigen_vals, eigen_vecs = np.linalg.eig(cov_mat)
@@ -42,8 +40,8 @@ class PcaGaussianClassifier(classifier.abstract_gaussian_classifier.AbstractGaus
         # [n x 256] x [256 x num_components] = [n x num_components]
         projected_data = training_data_centered.dot(eigen_vec_mat.T)
 
-        regularization_term_proj = np.multiply(self.regularization_param, np.eye(self.num_components))
-        projected_cov = np.cov(projected_data, rowvar=False) + regularization_term_proj
+        regularization_term = np.multiply(self.regularization_param, np.eye(self.num_components))
+        projected_cov = np.cov(projected_data, rowvar=False) + regularization_term
 
         self.class_models[label] = {'mean': mean_vec, 'cov': projected_cov, 'eigen': eigen_vec_mat}
 
@@ -55,7 +53,7 @@ class PcaGaussianClassifier(classifier.abstract_gaussian_classifier.AbstractGaus
         for label, model in self.class_models.items():
             centered_point = new_data_point - model['mean']
             projected_point = centered_point.dot(model['eigen'].T)
-            p_x = super()._calc_probability(model['mean'], model['cov'], projected_point)
+            p_x = super()._calc_probability(model['cov'], projected_point)
             class_probabilities[label] = p_x
 
         return max(class_probabilities.items(), key=operator.itemgetter(1))[0]

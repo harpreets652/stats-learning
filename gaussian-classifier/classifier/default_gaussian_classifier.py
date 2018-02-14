@@ -33,7 +33,7 @@ class DefaultGaussianClassifier(classifier.abstract_gaussian_classifier.Abstract
         class_probabilities = {}
 
         for label, model in self.class_models.items():
-            p_x = super()._calc_probability(model['mean'], model['cov'], new_data_point - model['mean'])
+            p_x = super()._calc_probability(model['cov'], new_data_point - model['mean'])
             class_probabilities[label] = p_x
 
         return max(class_probabilities.items(), key=operator.itemgetter(1))[0]

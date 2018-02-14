@@ -1,5 +1,6 @@
 import numpy as np
-import classifier.gaussian_classifier as gauss
+import classifier.default_gaussian_classifier as gauss
+import classifier.pca_gaussian_classifier as pca
 
 training_data_files = {0: "/Users/harpreetsingh/github/stats-learning/gaussian-classifier/resources/train0.txt",
                        1: "/Users/harpreetsingh/github/stats-learning/gaussian-classifier/resources/train1.txt",
@@ -45,15 +46,36 @@ def load_test_data(file_name):
     return test_data_buffer
 
 
+def run_default_classifier(test_data_set):
+    classifier = gauss.DefaultGaussianClassifier(0.1)
+
+    for label, file in training_data_files.items():
+        classifier.add_class(label, file)
+
+    confusion = run_test_data(test_data_set, classifier)
+
+    print("done!! \n", confusion)
+
+    return
+
+
+def run_pca_classifier(test_data_set):
+    classifier = pca.PcaGaussianClassifier(0.1, 16)
+
+    for label, file in training_data_files.items():
+        classifier.add_class(label, file)
+
+    # todo: p(x), x - mu doesn't work anymore: x is 16d while mean is 256
+    confusion = run_test_data(test_data_set, classifier)
+
+    print("done!! \n", confusion)
+
+    return
+
+
 # ==================================================================================================================
 
 test_data = load_test_data("/Users/harpreetsingh/github/stats-learning/gaussian-classifier/resources/test.txt")
 
-classifier = gauss.GaussianClassifier(0, 0.1)
-
-for label, file in training_data_files.items():
-    classifier.add_class(label, file)
-
-confusion = run_test_data(test_data, classifier)
-
-print("done!! \n", confusion)
+# run_default_classifier(test_data)
+run_pca_classifier(test_data)

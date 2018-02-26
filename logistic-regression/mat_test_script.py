@@ -1,22 +1,27 @@
 import numpy as np
 
-a = np.array(([1, 1, 1], [1, 1, 1]))
+x = np.array(([1, 8, 8, 8, 8],
+              [1, 4, 4, 4, 4],
+              [1, 12, 12, 12, 12]))
 
-b = np.array([2, 2, 2])
 
-c = np.array(([1, 5, 2], [8, 3, 2]))
+g = np.array(([2], [3], [4]))
 
-print("a: \n", a)
-print("b: \n", b)
-# print(np.concatenate([a, b])) # won't work since a and b aren't same shape
-print("add another row of 3 at the 0th index: \n", np.insert(a, 0, 3, axis=0))
-print("add another column of 3 at the 0th index: \n", np.insert(a, 0, 3, axis=1))
-print("0.005 * a: \n", 0.005 * a)
+print("np.multiply(g, x): \n", np.multiply(g, x))
+print("g * x: \n", g * x)
 
-print("np.multiply(0.001, a): \n", np.multiply(0.001, a))
-print("a transpose: \n", a.T)
-print("np.matmult(a.t, b): \n", np.matmul(b, a.T))
-print("a + c: \n", a + c)
-print("np.add(a, c): \n", np.add(a, c))
+print("x + 1: \n", x + 1)
+print("sum of columns: \n", np.sum(x, axis=0))
 
-print("np.append(a, b): \n", np.append(a, b))
+y = np.array([1, 1, 1])
+
+p = np.array([0.75, 0.75, 0.75])
+
+t = np.array([0, 1, 0])
+print ("sigmoid: ", np.exp(t) / (1 + np.exp(t)))
+
+prod = np.dot((y - p), x)
+
+print("result: \n", prod)
+
+

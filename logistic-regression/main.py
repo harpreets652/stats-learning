@@ -81,6 +81,7 @@ test_data = load_test_data("/Users/harpreetsingh/github/stats-learning/logistic-
 # * find good num_iterations and then store the confusion matrices of each group; learning rate will not affect accuracy
 # * vary the learning rate and plot for one group. If time permits, try different learning rate strategies
 # Note: report the normalization of the gradient and cost function (1/m)
+# Note: could plot error as positive than -1/m, since I've implemented gradient ascent
 classifier = lrc.LogisticRegClassifier([0, training_data_files[0]],
                                        [3, training_data_files[3]],
                                        0.01,

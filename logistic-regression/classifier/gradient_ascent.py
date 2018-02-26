@@ -41,8 +41,8 @@ def gradient_ascent(x, y, beta_init, alpha, num_iterations, calculate_error_hist
 def compute_error(x, y, beta):
     predicted_outputs = predict_sigmoid(x, beta)
 
-    return -1 / x.shape[0] * (np.sum(np.multiply(y, np.log(predicted_outputs)) +
-                                     np.multiply((1 - y), np.log(1 - predicted_outputs))))
+    return 1 / x.shape[0] * (np.sum(np.multiply(y, np.log(predicted_outputs)) +
+                                    np.multiply((1 - y), np.log(1 - predicted_outputs))))
 
 
 def predict_sigmoid(x, beta):

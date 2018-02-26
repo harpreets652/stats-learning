@@ -11,7 +11,6 @@ class LogisticRegClassifier:
         * gradient ascent optimization - loop {b = b + alpha*p(x; b)}
     """
 
-    # todo: try other sigmoid(might need gradient descent for this), variable learning rates
     def __init__(self, class_a_data, class_b_data, learning_rate, num_ga_iterations):
         self._class_1_label = class_a_data[0]
         self._class_0_label = class_b_data[0]
@@ -31,9 +30,12 @@ class LogisticRegClassifier:
         x_mat = np.array(train_data)
 
         x_mat = np.insert(x_mat, 0, 1, axis=1)
-        self.beta = np.zeros((x_mat.shape[1], 1))
-
-        self.beta = ga.gradient_ascent(x_mat, y_vec, self.beta, learning_rate, num_ga_iterations)
+        self._beta, self._error_history = ga.gradient_ascent(x_mat,
+                                                             y_vec,
+                                                             np.zeros((x_mat.shape[1], 1)),
+                                                             learning_rate,
+                                                             num_ga_iterations,
+                                                             True)
 
         return
 
@@ -50,3 +52,12 @@ class LogisticRegClassifier:
                 training_data.append((class_label, np.array(data)))
 
         return training_data
+
+    def get_grad_error_history(self):
+        return self._error_history
+
+    def classify(self, new_data_point):
+        x = np.insert(new_data_point, 0, 1, axis=0)
+        y_hat = ga.predict_sigmoid(x.T, self._beta)
+
+        return self._class_1_label if y_hat >= 0.5 else self._class_0_label

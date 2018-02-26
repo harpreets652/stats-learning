@@ -58,6 +58,6 @@ class LogisticRegClassifier:
 
     def classify(self, new_data_point):
         x = np.insert(new_data_point, 0, 1, axis=0)
-        y_hat = ga.predict_sigmoid(x.T, self._beta)
+        y_hat = ga.predict_sigmoid(x, self._beta)
 
         return self._class_1_label if y_hat >= 0.5 else self._class_0_label

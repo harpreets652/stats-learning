@@ -37,7 +37,7 @@ def load_test_data(file_name):
 def run_test_data(test_data_set, p_classifier, class_a, class_b):
     # row indexed by the test label, column indexed by predicted class
     confusion_matrix = np.zeros((2, 2))
-    class_index = {class_a: 0, class_b: 1}
+    class_index = {class_a: 1, class_b: 0}
 
     counter = 0
     for p in test_data_set:
@@ -67,7 +67,7 @@ def visualize_grad_history(gradient_results):
 
     plt.title("Gradient Ascent Error")
     plt.xlabel("Iteration")
-    plt.ylabel("RSS Error")
+    plt.ylabel("Logistic Function Error")
 
     plt.show()
 

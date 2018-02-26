@@ -40,7 +40,7 @@ class PcaGaussianClassifier(classifier.abstract_gaussian_classifier.AbstractGaus
         # [n x 256] x [256 x num_components] = [n x num_components]
         projected_data = training_data_centered.dot(eigen_vec_mat.T)
 
-        regularization_term = np.multiply(self.regularization_param, np.eye(self.num_components))
+        regularization_term = np.multiply(self._regularization_param, np.eye(self.num_components))
         projected_cov = np.cov(projected_data, rowvar=False) + regularization_term
 
         self.class_models[label] = {'mean': mean_vec, 'cov': projected_cov, 'eigen': eigen_vec_mat}

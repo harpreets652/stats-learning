@@ -7,7 +7,7 @@ class AbstractGaussianClassifier:
     """
 
     def __init__(self, reg_param):
-        self.regularization_param = reg_param
+        self._regularization_param = reg_param
         self.class_models = {}
         return
 
@@ -35,8 +35,9 @@ class AbstractGaussianClassifier:
 
     def _calc_probability(self, covariance, centered_point):
         """
-
-        :rtype:
+        :param covariance: covariance matrix
+        :param centered_point: new point centered (x - mean)
+        :return: probability
         """
         denominator_1 = ((2 * np.pi) ** (centered_point.shape[0] / 2))
         denominator_2 = np.sqrt(np.linalg.det(covariance))

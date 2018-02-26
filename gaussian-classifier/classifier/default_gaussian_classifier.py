@@ -18,7 +18,7 @@ class DefaultGaussianClassifier(classifier.abstract_gaussian_classifier.Abstract
         mean_vec = training_data_mat.mean(axis=0)
 
         # find the covariance; row var=False because each column represents a variable, with rows as observations
-        regularization_term = np.multiply(self.regularization_param, np.eye(training_data_mat.shape[1]))
+        regularization_term = np.multiply(self._regularization_param, np.eye(training_data_mat.shape[1]))
         cov_mat = np.cov(training_data_mat, rowvar=False) + regularization_term
 
         # add to a dictionary

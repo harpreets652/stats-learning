@@ -18,7 +18,7 @@ class MixtureOfGaussianClassifier(classifier.abstract_gaussian_classifier.Abstra
         # load training data
         training_data_mat = super()._load_training_data(data_file)
 
-        # call em algorithm and store the mean and covariance
+        # call em algorithm and store the mean, covariance, and gamma
         gaussian_models = em.execute_expectation_maximization(training_data_mat,
                                                               self._regularization_param,
                                                               self._num_gaussian,

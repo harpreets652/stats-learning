@@ -23,15 +23,15 @@ def execute_expectation_maximization(x, reg_param, num_gaussian, num_iterations)
     for i in range(num_iterations):
         print("iteration: ", i)
         # expectation
-        _expectation(gaussian_models, x_responsibilities)
+        _expectation_step(gaussian_models, x_responsibilities)
 
         # maximization
-        _maximization(gaussian_models, x_responsibilities, regularization_term)
+        _maximization_step(gaussian_models, x_responsibilities, regularization_term)
 
     return gaussian_models
 
 
-def _expectation(gaussian_dict, data):
+def _expectation_step(gaussian_dict, data):
     """
     Assign a Gaussian to each data point
     :param gaussian_dict: dictionary of Gaussian models
@@ -52,7 +52,14 @@ def _expectation(gaussian_dict, data):
     return
 
 
-def _maximization(gaussian_dict, data, regularization_term):
+def _maximization_step(gaussian_dict, data, regularization_term):
+    """
+
+    :param gaussian_dict: dictionary of Gaussian Models
+    :param data: input data
+    :param regularization_term: square matrix added to the covariance
+    :return: gaussian_dict updated
+    """
     size_of_data = len(data)
     for i in range(len(gaussian_dict)):
         x_cluster = np.array([t[0] for t in data if t[1] == i])

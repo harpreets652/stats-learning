@@ -1,5 +1,6 @@
 import classifier.abstract_gaussian_classifier
 import classifier.expectation_maximization as em
+import operator
 
 
 class MixtureOfGaussianClassifier(classifier.abstract_gaussian_classifier.AbstractGaussianClassifier):
@@ -23,10 +24,20 @@ class MixtureOfGaussianClassifier(classifier.abstract_gaussian_classifier.Abstra
                                                               self._num_gaussian,
                                                               self._em_num_iterations)
 
-        self.class_models[label] = gaussian_models
+        self._class_models[label] = gaussian_models
 
         return self
 
     def classify(self, new_data_point):
-        # todo: implement
-        return
+        if not self._class_models:
+            raise RuntimeError("no class models found")
+
+        class_probabilities = {}
+        for label, class_gaussian_models in self._class_models.items():
+            p_x = 0
+            for model in class_gaussian_models.items():
+                p_x += super()._calc_probability(model['cov'], new_data_point - model['mean']) * model["gamma"]
+
+            class_probabilities[label] = p_x
+
+        return max(class_probabilities.items(), key=operator.itemgetter(1))[0]

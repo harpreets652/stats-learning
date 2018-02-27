@@ -3,6 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import classifier.expectation_maximization as em
 
+
+# test data generation code from: http://scikit-learn.org/stable/auto_examples/cluster/plot_cluster_comparison.html
 np.random.seed(0)
 
 n_samples = 500

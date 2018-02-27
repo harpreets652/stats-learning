@@ -8,7 +8,7 @@ class AbstractGaussianClassifier:
 
     def __init__(self, reg_param):
         self._regularization_param = reg_param
-        self.class_models = {}
+        self._class_models = {}
         return
 
     def add_class(self, label, data_file):

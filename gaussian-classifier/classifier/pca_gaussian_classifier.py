@@ -43,14 +43,14 @@ class PcaGaussianClassifier(classifier.abstract_gaussian_classifier.AbstractGaus
         regularization_term = np.multiply(self._regularization_param, np.eye(self.num_components))
         projected_cov = np.cov(projected_data, rowvar=False) + regularization_term
 
-        self.class_models[label] = {'mean': mean_vec, 'cov': projected_cov, 'eigen': eigen_vec_mat}
+        self._class_models[label] = {'mean': mean_vec, 'cov': projected_cov, 'eigen': eigen_vec_mat}
 
         return self
 
     def classify(self, new_data_point):
         class_probabilities = {}
 
-        for label, model in self.class_models.items():
+        for label, model in self._class_models.items():
             centered_point = new_data_point - model['mean']
             projected_point = centered_point.dot(model['eigen'].T)
             p_x = super()._calc_probability(model['cov'], projected_point)

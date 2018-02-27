@@ -22,17 +22,17 @@ class DefaultGaussianClassifier(classifier.abstract_gaussian_classifier.Abstract
         cov_mat = np.cov(training_data_mat, rowvar=False) + regularization_term
 
         # add to a dictionary
-        self.class_models[label] = {'mean': mean_vec, 'cov': cov_mat}
+        self._class_models[label] = {'mean': mean_vec, 'cov': cov_mat}
 
         return self
 
     def classify(self, new_data_point):
-        if not self.class_models:
+        if not self._class_models:
             raise RuntimeError("no class models found")
 
         class_probabilities = {}
 
-        for label, model in self.class_models.items():
+        for label, model in self._class_models.items():
             p_x = super()._calc_probability(model['cov'], new_data_point - model['mean'])
             class_probabilities[label] = p_x
 

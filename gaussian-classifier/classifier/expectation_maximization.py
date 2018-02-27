@@ -38,13 +38,19 @@ def _expectation_step(gaussian_dict, data):
     :param data: input data
     :return: modifies data directly
     """
+
+    # pre-compute inverses of the covariance matrices because it's very expensive
+    inverse_cov = []
+    for model in gaussian_dict:
+        inverse_cov.append(np.linalg.inv(model["cov"]))
+
     for i in range(len(data)):
         x_i = data[i][0]
 
         mahalanobis_distances = {}
         for j in range(len(gaussian_dict)):
             centered_point = x_i - gaussian_dict[j]["mean"]
-            mahalanobis_distance = centered_point.dot(np.linalg.inv(gaussian_dict[j]["cov"])).dot(centered_point)
+            mahalanobis_distance = centered_point.dot(inverse_cov[j]).dot(centered_point)
             mahalanobis_distances[j] = mahalanobis_distance
 
         data[i][1] = min(mahalanobis_distances.items(), key=operator.itemgetter(1))[0]

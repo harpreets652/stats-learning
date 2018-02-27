@@ -142,7 +142,7 @@ def run_pca_classifier(test_data_set):
 
 def run_mixture_of_gaussian(test_data_set):
     num_gaussian = 2
-    classifier = mgc.MixtureOfGaussianClassifier(num_of_gaussian=num_gaussian, em_algorithm_iterations=1)
+    classifier = mgc.MixtureOfGaussianClassifier(num_of_gaussian=num_gaussian, em_algorithm_iterations=10)
 
     for label, file in training_data_files.items():
         classifier.add_class(label, file)

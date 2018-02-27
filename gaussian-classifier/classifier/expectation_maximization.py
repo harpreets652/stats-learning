@@ -21,6 +21,7 @@ def execute_expectation_maximization(x, reg_param, num_gaussian, num_iterations)
 
     # main loop
     for i in range(num_iterations):
+        print("iteration: ", i)
         # expectation
         _expectation(gaussian_models, x_responsibilities)
 

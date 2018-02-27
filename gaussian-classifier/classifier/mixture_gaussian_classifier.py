@@ -28,4 +28,5 @@ class MixtureOfGaussianClassifier(classifier.abstract_gaussian_classifier.Abstra
         return self
 
     def classify(self, new_data_point):
+        # todo: implement
         return

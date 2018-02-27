@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import classifier.default_gaussian_classifier as gauss
 import classifier.pca_gaussian_classifier as pca
+import classifier.mixture_gaussian_classifier as mgc
 
 training_data_files = {0: "/Users/harpreetsingh/github/stats-learning/gaussian-classifier/resources/train0.txt",
                        1: "/Users/harpreetsingh/github/stats-learning/gaussian-classifier/resources/train1.txt",
@@ -44,7 +45,7 @@ def run_test_data(test_data_set, gauss_classifier):
         predicted_class = gauss_classifier.classify(p[1])
         confusion_matrix[p[0]][predicted_class] += 1
         counter += 1
-        # print("count: ", counter)
+        print("count: ", counter)
 
     return confusion_matrix
 
@@ -139,9 +140,39 @@ def run_pca_classifier(test_data_set):
     return
 
 
+def run_mixture_of_gaussian(test_data_set):
+    num_gaussian = 2
+    classifier = mgc.MixtureOfGaussianClassifier(num_of_gaussian=num_gaussian, em_algorithm_iterations=1)
+
+    for label, file in training_data_files.items():
+        classifier.add_class(label, file)
+
+    confusion = run_test_data(test_data_set, classifier)
+
+    confusion_file_prefix = "/Users/harpreetsingh/github/stats-learning/gaussian-classifier/results/"
+    output_file_name = confusion_file_prefix + "mgc_confusion_" + str(num_gaussian) + "_models.csv"
+    np.savetxt(output_file_name,
+               confusion,
+               fmt='%i',
+               delimiter=',')
+
+    print("done!! \n", confusion)
+
+    return
+
+
 # ==================================================================================================================
 
-test_data = load_test_data("/Users/harpreetsingh/github/stats-learning/gaussian-classifier/resources/test.txt")
 
-# run_default_classifier(test_data)
-run_pca_classifier(test_data)
+def main():
+    test_data = load_test_data("/Users/harpreetsingh/github/stats-learning/gaussian-classifier/resources/test.txt")
+
+    # run_default_classifier(test_data)
+    # run_pca_classifier(test_data)
+    run_mixture_of_gaussian(test_data)
+
+    return
+
+
+if __name__ == '__main__':
+    main()

@@ -1,9 +1,9 @@
 import numpy as np
 
 
-def gradient_ascent(x, y, beta_init, alpha, num_iterations, calculate_error_history=False):
+def gradient_ascent(x, y, beta_init, alpha, num_iterations, calculate_likelihood_history=False):
     """
-    :param calculate_error_history: keep error history over iterations
+    :param calculate_likelihood_history: keep error history over iterations
     :param x: NxM+1
     :param y: Nx1
     :param beta_init: M+1
@@ -14,7 +14,7 @@ def gradient_ascent(x, y, beta_init, alpha, num_iterations, calculate_error_hist
     # convert y to a column vector
     y_vec = np.reshape(y, (y.shape[0], 1))
     beta = beta_init
-    error_history = np.zeros((num_iterations, 2))
+    likelihood_history = np.zeros((num_iterations, 2))
 
     for i in range(0, num_iterations):
         print("iteration: ", i)
@@ -31,14 +31,14 @@ def gradient_ascent(x, y, beta_init, alpha, num_iterations, calculate_error_hist
 
         beta = beta + alpha * grad_vec
 
-        if calculate_error_history:
-            error_history[i][0] = i
-            error_history[i][1] = compute_error(x, y_vec, beta)
+        if calculate_likelihood_history:
+            likelihood_history[i][0] = i
+            likelihood_history[i][1] = compute_likelihood(x, y_vec, beta)
 
-    return beta, error_history
+    return beta, likelihood_history
 
 
-def compute_error(x, y, beta):
+def compute_likelihood(x, y, beta):
     predicted_outputs = predict_sigmoid(x, beta)
 
     return 1 / x.shape[0] * (np.sum(np.multiply(y, np.log(predicted_outputs)) +

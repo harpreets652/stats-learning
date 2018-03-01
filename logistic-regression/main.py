@@ -37,7 +37,7 @@ def load_test_data(file_name):
 def run_test_data(test_data_set, p_classifier, class_a, class_b):
     # row indexed by the test label, column indexed by predicted class
     confusion_matrix = np.zeros((2, 2))
-    class_index = {class_a: 1, class_b: 0}
+    class_index = {class_a: 0, class_b: 1}
 
     counter = 0
     for p in test_data_set:
@@ -65,9 +65,9 @@ def visualize_grad_history(gradient_results):
     # x1, x2, y1, y2 = plt.axis()
     # plt.axis((x1, x2, 0, 1))
 
-    plt.title("Gradient Ascent Error")
+    plt.title("Gradient Ascent Progress")
     plt.xlabel("Iteration")
-    plt.ylabel("Logistic Function Error")
+    plt.ylabel("Log-Likelihood Output")
 
     plt.show()
 
@@ -82,11 +82,11 @@ test_data = load_test_data("/Users/harpreetsingh/github/stats-learning/logistic-
 # * vary the learning rate and plot for one group. If time permits, try different learning rate strategies
 # Note: report the normalization of the gradient and cost function (1/m)
 # Note: could plot error as positive than -1/m, since I've implemented gradient ascent
-classifier = lrc.LogisticRegClassifier([0, training_data_files[0]],
-                                       [3, training_data_files[3]],
-                                       0.01,
+classifier = lrc.LogisticRegClassifier([1, training_data_files[1]],
+                                       [9, training_data_files[9]],
+                                       0.1,
                                        500)
 visualize_grad_history(classifier.get_grad_error_history())
 
-c_matrix = run_test_data(test_data, classifier, 0, 3)
+c_matrix = run_test_data(test_data, classifier, 1, 9)
 print("confusion matrix: \n", c_matrix)

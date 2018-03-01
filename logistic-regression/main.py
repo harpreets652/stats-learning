@@ -74,19 +74,50 @@ def visualize_grad_history(gradient_results):
     return
 
 
+def visualize_multi_grad_history(gradient_results):
+    styles = ['-', '-.', '--', ':']
+    colors = ['r', 'b', 'g', 'k']
+
+    counter = 0
+    for results in gradient_results:
+        plt.plot(results[1][:, 0],
+                 results[1][:, 1],
+                 color=colors[counter],
+                 linestyle=styles[counter],
+                 linewidth=1.5,
+                 label="Alpha=" + str(results[0])
+                 )
+        counter += 1
+
+    # x1, x2, y1, y2 = plt.axis()
+    # plt.axis((x1, x2, 0, 1))
+
+    plt.legend(loc='best')
+    plt.title("Gradient Ascent Progress")
+    plt.xlabel("Iteration")
+    plt.ylabel("Log-Likelihood Output")
+
+    plt.show()
+
+    return
+
+
 # ==================================================================================================================
 test_data = load_test_data("/Users/harpreetsingh/github/stats-learning/logistic-regression/resources/test_set.txt")
 
-# todo: for report
-# * find good num_iterations and then store the confusion matrices of each group; learning rate will not affect accuracy
-# * vary the learning rate and plot for one group. If time permits, try different learning rate strategies
-# Note: report the normalization of the gradient and cost function (1/m)
-# Note: could plot error as positive than -1/m, since I've implemented gradient ascent
-classifier = lrc.LogisticRegClassifier([1, training_data_files[1]],
-                                       [9, training_data_files[9]],
-                                       0.1,
-                                       500)
-visualize_grad_history(classifier.get_grad_error_history())
+error_histories = []
+learning_rates = [1.0, 0.5, 0.1, 0.0001]
 
-c_matrix = run_test_data(test_data, classifier, 1, 9)
-print("confusion matrix: \n", c_matrix)
+for i in learning_rates:
+    classifier = lrc.LogisticRegClassifier([0, training_data_files[0]],
+                                           [3, training_data_files[3]],
+                                           i,
+                                           200)
+    error_histories.append((i, classifier.get_grad_error_history()))
+
+visualize_multi_grad_history(error_histories)
+
+# visualize_grad_history(classifier.get_grad_error_history())
+
+# c_matrix = run_test_data(test_data, classifier, 1, 9)
+# print("confusion matrix: \n", c_matrix)

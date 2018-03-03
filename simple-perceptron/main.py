@@ -5,7 +5,7 @@ import data_generator as dg
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-training_data = "/Users/harpreetsingh/github/stats-learning/simple-perceptron/resources/data_sep_1.txt"
+training_data = "/Users/harpreetsingh/github/stats-learning/simple-perceptron/resources/data.txt"
 
 
 def load_training_data(file_name):
@@ -29,8 +29,8 @@ def load_training_data(file_name):
 
 
 def visualize_data(x_mat, y_vec, plane_eq):
-    x_range = [int(min(x_mat[0]) + 1), int(max(x_mat[0]) + 1)]
-    y_range = [int(min(x_mat[1]) + 1), int(max(x_mat[1]) + 1)]
+    x_range = [int(min(x_mat[0]) - 5), int(max(x_mat[0]) + 5)]
+    y_range = [int(min(x_mat[1]) - 5), int(max(x_mat[1]) + 5)]
     dg.visualize_3d_data(x_mat, y_vec, plane_eq, x_range, y_range)
 
     return

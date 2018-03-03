@@ -39,11 +39,11 @@ class PerceptronGDClassifier:
             output = PerceptronGDClassifier.perceptron_forward_pass(x_mat, weights)
 
             # compute Jacobian matrix
-            jacobian = PerceptronGDClassifier.compute_jacobian(y_vec, output, weights)
+            jacobian = PerceptronGDClassifier.compute_jacobian(y_vec, output, x_mat)
 
             # compute gradient - sum of columns of Jacobian
             gradient_row_vec = np.sum(jacobian, axis=0)
-            gradient = 1 / x_mat.shape[0] * np.reshape(gradient_row_vec, (gradient_row_vec.shape[0], 1))
+            gradient = np.reshape(gradient_row_vec, (gradient_row_vec.shape[0], 1))
 
             # todo: weights are never updated b/c they're initialized to 0 and are included in the gradient calc.
             # adjust weights: w = w - alpha*gradient
@@ -66,8 +66,16 @@ class PerceptronGDClassifier:
         return 1 / (1 + z_exp)
 
     @staticmethod
-    def compute_jacobian(y_vec, perceptron_output_vec, weights_vec):
+    def compute_jacobian(y_vec, perceptron_output_vec, x_mat):
         """
+        A = Perceptron output vector for all x_i
+        X = matrix of all training examples
+        Y = Corresponding target outputs
+
+        Jacobian = (Y - A)*(A)*(1 -  A) * X
+
+        All multiplications are element-wise
+
         :param y_vec: labeled classes [Mx1]
         :param perceptron_output_vec: forward pass output [Mx1]
         :param weights_vec: perceptron weights [N+1x1]
@@ -77,6 +85,6 @@ class PerceptronGDClassifier:
         first_term = y_vec - perceptron_output_vec
         third_term = 1 - perceptron_output_vec
 
-        jacobian = (first_term * perceptron_output_vec * third_term).dot(weights_vec.T)
+        jacobian = (first_term * perceptron_output_vec * third_term) * x_mat
 
         return jacobian

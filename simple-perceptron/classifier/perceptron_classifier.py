@@ -17,7 +17,7 @@ class PerceptronClassifier:
         self._weights = PerceptronClassifier.perceptron_learning_algorithm(x_mat,
                                                                            y_vec,
                                                                            5000,
-                                                                           int(x_mat.shape[0] * 0.75))
+                                                                           int(x_mat.shape[0] * 1.00))
 
         return
 
@@ -50,6 +50,8 @@ class PerceptronClassifier:
         while True:
             if num_iterations >= max_iterations or \
                     num_iter_without_adjustments >= max_iter_without_adjustment:
+                print(f"number of iterations: {num_iterations}, "
+                      f"num_iterations_without_adjustments: {num_iter_without_adjustments}")
                 break
 
             rand_x_index = random.randint(0, x_mat.shape[0] - 1)

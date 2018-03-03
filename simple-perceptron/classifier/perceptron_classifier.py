@@ -44,6 +44,7 @@ class PerceptronClassifier:
 
         weights_column_vec = np.array(pos_data).mean(axis=0) - np.array(neg_data).mean(axis=0)
         weights = np.reshape(weights_column_vec, (weights_column_vec.shape[0], 1))
+        weights = np.zeros((x_mat.shape[1], 1))
 
         num_iter_without_adjustments = 0
         num_iterations = 0
@@ -55,14 +56,16 @@ class PerceptronClassifier:
                 break
 
             rand_x_index = random.randint(0, x_mat.shape[0] - 1)
-            x_i = x_mat[rand_x_index]
+            x_i_col = x_mat[rand_x_index]
+            x_i = np.reshape(x_i_col, (x_i_col.shape[0], 1))
+
             y_i = y_vec[rand_x_index]
 
             prediction = PerceptronClassifier.sign_function(x_i, weights, 0)
 
             if y_i != prediction:
                 num_iter_without_adjustments = 0
-                weights += x_i if y_i else -x_i
+                weights = np.add(weights, (x_i if y_i else -1 * x_i))
             else:
                 num_iter_without_adjustments += 1
 
@@ -79,6 +82,6 @@ class PerceptronClassifier:
         :return: true if x*w >= 0, false otherwise
         """
 
-        x_dot_w = np.dot(x, weights)
+        x_dot_w = np.dot(x.T, weights)
 
         return 1 if x_dot_w >= threshold else 0

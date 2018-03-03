@@ -8,7 +8,7 @@ class PerceptronClassifier:
         :param features: n-dimensional feature vector matrix
         :param labels: y = {0, 1}
         """
-        if not features or labels:
+        if not features.size or not labels.size:
             raise RuntimeError("features and labels inputs may not be empty ")
 
         y_vec = np.reshape(labels, (labels.shape[0], 1))
@@ -35,8 +35,15 @@ class PerceptronClassifier:
         :param y_vec: labeled outputs
         :return: weights
         """
+        pos_data, neg_data = [], []
+        for i in range(x_mat.shape[0]):
+            if y_vec[i]:
+                pos_data.append(x_mat[i])
+            else:
+                neg_data.append(x_mat[i])
 
-        weights = np.zeros((x_mat.shape[1], 1))
+        weights_column_vec = np.array(pos_data).mean(axis=0) - np.array(neg_data).mean(axis=0)
+        weights = np.reshape(weights_column_vec, (weights_column_vec.shape[0], 1))
 
         num_iter_without_adjustments = 0
         num_iterations = 0
@@ -45,7 +52,7 @@ class PerceptronClassifier:
                     num_iter_without_adjustments >= max_iter_without_adjustment:
                 break
 
-            rand_x_index = random.randint(0, x_mat.shape[0])
+            rand_x_index = random.randint(0, x_mat.shape[0] - 1)
             x_i = x_mat[rand_x_index]
             y_i = y_vec[rand_x_index]
 

@@ -1,5 +1,6 @@
 import numpy as np
-import classifier.perceptron_classifier as pc
+import classifier.perceptron_pla_classifier as pc_pla
+import classifier.perceptron_gd_classifier as pc_gd
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
@@ -45,13 +46,29 @@ def visualize_data(x_mat, y_vec, plane_eq):
     return
 
 
-def main():
-    x, y = load_training_data(training_data)
-
-    classifier = pc.PerceptronClassifier(x, y)
+def run_pla_classifier(x, y):
+    classifier = pc_pla.PerceptronPLAClassifier(x, y)
     print("weights: ", classifier.get_weights())
 
     visualize_data(x, y, classifier.get_weights())
+
+    return
+
+
+def run_gd_classifier(x, y):
+    classifier = pc_gd.PerceptronGDClassifier(x, y)
+    print("weights: ", classifier.get_weights())
+
+    visualize_data(x, y, classifier.get_weights())
+
+    return
+
+
+def main():
+    x, y = load_training_data(training_data)
+
+    # run_pla_classifier(x, y)
+    run_gd_classifier(x, y)
 
     return
 

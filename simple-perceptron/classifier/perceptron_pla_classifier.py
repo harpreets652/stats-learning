@@ -2,7 +2,7 @@ import numpy as np
 import random
 
 
-class PerceptronClassifier:
+class PerceptronPLAClassifier:
     def __init__(self, features, labels):
         """
         :param features: n-dimensional feature vector matrix
@@ -14,10 +14,10 @@ class PerceptronClassifier:
         y_vec = np.reshape(labels, (labels.shape[0], 1))
         x_mat = np.insert(features, 0, 1, axis=1)
 
-        self._weights = PerceptronClassifier.perceptron_learning_algorithm(x_mat,
-                                                                           y_vec,
-                                                                           5000,
-                                                                           int(x_mat.shape[0] * 1.00))
+        self._weights = PerceptronPLAClassifier.perceptron_learning_algorithm(x_mat,
+                                                                              y_vec,
+                                                                              5000,
+                                                                              int(x_mat.shape[0] * 1.00))
 
         return
 
@@ -56,12 +56,12 @@ class PerceptronClassifier:
                 break
 
             rand_x_index = random.randint(0, x_mat.shape[0] - 1)
-            x_i_col = x_mat[rand_x_index]
-            x_i = np.reshape(x_i_col, (x_i_col.shape[0], 1))
+            x_i_row = x_mat[rand_x_index]
+            x_i = np.reshape(x_i_row, (x_i_row.shape[0], 1))
 
             y_i = y_vec[rand_x_index]
 
-            prediction = PerceptronClassifier.sign_function(x_i, weights, 0)
+            prediction = PerceptronPLAClassifier.perceptron_forward_pass(x_i, weights, 0)
 
             if y_i != prediction:
                 num_iter_without_adjustments = 0
@@ -74,7 +74,7 @@ class PerceptronClassifier:
         return weights
 
     @staticmethod
-    def sign_function(x, weights, threshold):
+    def perceptron_forward_pass(x, weights, threshold):
         """
         :param threshold: sign function threshold value
         :param x: feature vector

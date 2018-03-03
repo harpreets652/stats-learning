@@ -1,4 +1,5 @@
 import numpy as np
+import random
 
 
 class PerceptronGDClassifier:
@@ -31,10 +32,13 @@ class PerceptronGDClassifier:
         :return: trained weights
         """
 
-        weights = np.zeros((x_mat.shape[1], 1))
+        # Note: can't initialize weights to zero since data is already linearly separated about the origin
+        weights = np.array(([0],
+                            [random.uniform(-4, 4)],
+                            [random.uniform(-4, 4)],
+                            [random.uniform(-4, 4)]))
 
         for i in range(num_iterations):
-            bla = 2
             # find prediction vector [mx1]
             output = PerceptronGDClassifier.perceptron_forward_pass(x_mat, weights)
 

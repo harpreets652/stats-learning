@@ -5,13 +5,13 @@ from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 
 
-def generate_linearly_separated_data(num_samples=100, num_of_features=3):
+def generate_linearly_separated_data(num_samples=100, num_of_features=3, class_separability=1.0):
     x, y = ds.make_classification(n_samples=num_samples,
                                   n_features=num_of_features,
                                   n_informative=num_of_features,
                                   n_redundant=0,
                                   n_clusters_per_class=1,
-                                  class_sep=1.0,
+                                  class_sep=class_separability,
                                   flip_y=0,
                                   shift=None)
 

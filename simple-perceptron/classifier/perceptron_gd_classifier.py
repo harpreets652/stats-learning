@@ -1,5 +1,4 @@
 import numpy as np
-import random
 
 
 class PerceptronGDClassifier:
@@ -45,7 +44,6 @@ class PerceptronGDClassifier:
             gradient_row_vec = np.sum(jacobian, axis=0)
             gradient = np.reshape(gradient_row_vec, (gradient_row_vec.shape[0], 1))
 
-            # todo: weights are never updated b/c they're initialized to 0 and are included in the gradient calc.
             # adjust weights: w = w - alpha*gradient
             weights = weights - learning_rate * gradient
 
@@ -78,7 +76,7 @@ class PerceptronGDClassifier:
 
         :param y_vec: labeled classes [Mx1]
         :param perceptron_output_vec: forward pass output [Mx1]
-        :param weights_vec: perceptron weights [N+1x1]
+        :param x_mat: matrix of training examples
         :return: MxN+1 Jacobian matrix: partial derivatives of the Error w.r.t. weights
         """
 

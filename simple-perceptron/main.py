@@ -1,10 +1,11 @@
 import numpy as np
 import classifier.perceptron_pla_classifier as pc_pla
 import classifier.perceptron_gd_classifier as pc_gd
+import data_generator as dg
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-training_data = "/Users/harpreetsingh/github/stats-learning/simple-perceptron/resources/data.txt"
+training_data = "/Users/harpreetsingh/github/stats-learning/simple-perceptron/resources/data_sep_1.txt"
 
 
 def load_training_data(file_name):
@@ -28,20 +29,9 @@ def load_training_data(file_name):
 
 
 def visualize_data(x_mat, y_vec, plane_eq):
-    colors = ['r', 'b']
-
-    figure = plt.figure()
-    ax = figure.add_subplot(111, projection='3d')
-    plane = figure.gca(projection='3d')
-
-    for i in range(x_mat.shape[0]):
-        ax.scatter(x_mat[i, 0], x_mat[i, 1], x_mat[i, 2], color=colors[y_vec[i]])
-
-    xx, yy = np.meshgrid(range(-7, 2), range(-5, 5))
-    z = (-plane_eq[1] * xx - plane_eq[2] * yy - plane_eq[0]) * 1. / plane_eq[3]
-
-    plane.plot_surface(xx, yy, z, alpha=0.5)
-    plt.show()
+    x_range = [int(min(x_mat[0]) + 1), int(max(x_mat[0]) + 1)]
+    y_range = [int(min(x_mat[1]) + 1), int(max(x_mat[1]) + 1)]
+    dg.visualize_3d_data(x_mat, y_vec, plane_eq, x_range, y_range)
 
     return
 

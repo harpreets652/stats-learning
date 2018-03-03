@@ -32,11 +32,7 @@ class PerceptronGDClassifier:
         :return: trained weights
         """
 
-        # Note: can't initialize weights to zero since data is already linearly separated about the origin
-        weights = np.array(([0],
-                            [random.uniform(-4, 4)],
-                            [random.uniform(-4, 4)],
-                            [random.uniform(-4, 4)]))
+        weights = np.zeros((x_mat.shape[1], 1))
 
         for i in range(num_iterations):
             # find prediction vector [mx1]
@@ -47,8 +43,9 @@ class PerceptronGDClassifier:
 
             # compute gradient - sum of columns of Jacobian
             gradient_row_vec = np.sum(jacobian, axis=0)
-            gradient = np.reshape(gradient_row_vec, (gradient_row_vec.shape[0], 1))
+            gradient = 1 / x_mat.shape[0] * np.reshape(gradient_row_vec, (gradient_row_vec.shape[0], 1))
 
+            # todo: weights are never updated b/c they're initialized to 0 and are included in the gradient calc.
             # adjust weights: w = w - alpha*gradient
             weights = weights - learning_rate * gradient
 

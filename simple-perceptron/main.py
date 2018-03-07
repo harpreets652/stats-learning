@@ -2,6 +2,7 @@ import numpy as np
 import classifier.perceptron_pla_classifier as pc_pla
 import classifier.perceptron_gd_classifier as pc_gd
 import data_generator as dg
+import matplotlib.pyplot as plt
 
 training_data = "/Users/harpreetsingh/github/stats-learning/simple-perceptron/resources/data.txt"
 
@@ -34,16 +35,38 @@ def visualize_data(x_mat, y_vec, plane_eq):
     return
 
 
-def run_pla_classifier(x, y):
-    classifier = pc_pla.PerceptronPLAClassifier(x, y)
-    print("weights: ", classifier.get_weights())
-
-    visualize_data(x, y, classifier.get_weights())
+def visualize_runtimes(runtime_data):
+    plt.scatter(runtime_data[:, 0],
+                runtime_data[:, 1],
+                facecolors='none',
+                linewidths=0.5,
+                edgecolors='b',
+                s=10)
 
     return
 
 
-def run_gd_classifier(x, y):
+def run_pla_classifier():
+    runtime_data = []
+    num_of_data = np.arange(100, 550, 10)
+
+    for sample_size in num_of_data:
+        x, y = dg.generate_linearly_separated_data(num_samples=sample_size)
+
+        classifier = pc_pla.PerceptronPLAClassifier(x, y)
+        runtime_data.append((sample_size, classifier.get_runtime()))
+
+        print("weights: ", classifier.get_weights())
+        # visualize_data(x, y, classifier.get_weights())
+
+    visualize_runtimes(np.array(runtime_data))
+
+    return
+
+
+def run_gd_classifier():
+    x, y = dg.generate_linearly_separated_data()
+
     classifier = pc_gd.PerceptronGDClassifier(x, y)
     print("weights: ", classifier.get_weights())
 
@@ -53,10 +76,8 @@ def run_gd_classifier(x, y):
 
 
 def main():
-    x, y = dg.generate_linearly_separated_data()
-
-    # run_pla_classifier(x, y)
-    run_gd_classifier(x, y)
+    run_pla_classifier()
+    # run_gd_classifier(x, y)
 
     return
 

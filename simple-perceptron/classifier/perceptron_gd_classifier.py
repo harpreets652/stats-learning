@@ -1,4 +1,5 @@
 import numpy as np
+import classifier.timing_decorator as td
 
 
 class PerceptronGDClassifier:
@@ -14,12 +15,18 @@ class PerceptronGDClassifier:
         y_vec = np.reshape(labels, (labels.shape[0], 1))
         x_mat = np.insert(features, 0, 1, axis=1)
 
-        self._weights = PerceptronGDClassifier.gradient_descent(x_mat, y_vec, 0.1, 500)
+        time_s, weights = td.time_method(PerceptronGDClassifier.gradient_descent, x_mat, y_vec, 0.1, 800)
+
+        self._weights = weights
+        self._time_ms = time_s * 1000.0
 
         return
 
     def get_weights(self):
         return self._weights
+
+    def get_runtime(self):
+        return self._time_ms
 
     @staticmethod
     def gradient_descent(x_mat, y_vec, learning_rate, num_iterations):

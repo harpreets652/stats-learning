@@ -1,5 +1,5 @@
 import numpy as np
-import classifier.timing_decorator as td
+import classifier.timing as td
 
 
 class PerceptronGDClassifier:

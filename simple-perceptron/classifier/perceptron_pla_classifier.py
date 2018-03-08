@@ -1,6 +1,6 @@
 import numpy as np
 import random
-import classifier.timing_decorator as td
+import classifier.timing as td
 
 
 class PerceptronPLAClassifier:
@@ -50,7 +50,7 @@ class PerceptronPLAClassifier:
                 neg_data.append(x_mat[i])
 
         weights_column_vec = np.array(pos_data).mean(axis=0) - np.array(neg_data).mean(axis=0)
-        weights = np.reshape(weights_column_vec, (weights_column_vec.shape[0], 1))
+        # weights = np.reshape(weights_column_vec, (weights_column_vec.shape[0], 1))
         weights = np.zeros((x_mat.shape[1], 1))
 
         num_iter_without_adjustments = 0

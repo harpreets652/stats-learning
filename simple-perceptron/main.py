@@ -43,12 +43,17 @@ def visualize_runtimes(runtime_data):
                 edgecolors='b',
                 s=10)
 
+    plt.xlabel("Sample Size")
+    plt.ylabel("Runtime (ms)")
+
+    plt.show()
+
     return
 
 
 def run_pla_classifier():
     runtime_data = []
-    num_of_data = np.arange(100, 550, 10)
+    num_of_data = np.arange(100, 300, 10)
 
     for sample_size in num_of_data:
         x, y = dg.generate_linearly_separated_data(num_samples=sample_size)

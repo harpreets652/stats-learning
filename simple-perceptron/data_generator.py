@@ -28,12 +28,13 @@ def visualize_3d_data(x, y, plane_eq, plane_x_range, plane_y_range):
     :return:
     """
     colors = ['r', 'b']
+    style = ['.', '+']
 
     figure = plt.figure()
     ax = figure.add_subplot(111, projection='3d')
 
     for i in range(x.shape[0]):
-        ax.scatter(x[i, 0], x[i, 1], x[i, 2], color=colors[y[i]])
+        ax.scatter(x[i, 0], x[i, 1], x[i, 2], color=colors[y[i]], marker=style[y[i]], s=40)
 
     if plane_eq.size:
         plane = figure.gca(projection='3d')
@@ -55,10 +56,10 @@ def save_data(output_file, x, y):
 
 
 def main():
-    x, y = generate_linearly_separated_data()
+    x, y = generate_linearly_separated_data(class_separability=2)
     visualize_3d_data(x, y, np.array(()), (), ())
 
-    output_file = "/Users/harpreetsingh/github/stats-learning/simple-perceptron/resources/data_sep_1.txt"
+    output_file = "/Users/harpreetsingh/github/stats-learning/simple-perceptron/resources/data_sep_2.txt"
     save_data(output_file, x, y)
 
     return

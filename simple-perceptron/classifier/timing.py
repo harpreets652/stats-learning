@@ -1,6 +1,5 @@
 from timeit import Timer
 
-import functools
 
 """
 https://stackoverflow.com/questions/20974147/timeit-eats-return-value

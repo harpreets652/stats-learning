@@ -15,7 +15,7 @@ class PerceptronGDClassifier:
         y_vec = np.reshape(labels, (labels.shape[0], 1))
         x_mat = np.insert(features, 0, 1, axis=1)
 
-        time_s, weights = td.time_method(PerceptronGDClassifier.gradient_descent, x_mat, y_vec, 0.1, 800)
+        time_s, weights = td.time_method(PerceptronGDClassifier.gradient_descent, x_mat, y_vec, 0.1, 200)
 
         self._weights = weights
         self._time_ms = time_s * 1000.0

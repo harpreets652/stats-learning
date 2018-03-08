@@ -41,7 +41,7 @@ def visualize_runtimes(runtime_data):
                 facecolors='none',
                 linewidths=0.5,
                 edgecolors='b',
-                s=10)
+                s=30)
 
     plt.xlabel("Sample Size")
     plt.ylabel("Runtime (ms)")
@@ -56,12 +56,12 @@ def run_pla_classifier():
     num_of_data = np.arange(100, 300, 10)
 
     for sample_size in num_of_data:
-        x, y = dg.generate_linearly_separated_data(num_samples=sample_size)
+        x, y = dg.generate_linearly_separated_data(num_samples=sample_size, class_separability=2)
 
         classifier = pc_pla.PerceptronPLAClassifier(x, y)
         runtime_data.append((sample_size, classifier.get_runtime()))
 
-        print("weights: ", classifier.get_weights())
+        # print("weights: ", classifier.get_weights())
         # visualize_data(x, y, classifier.get_weights())
 
     visualize_runtimes(np.array(runtime_data))
@@ -70,7 +70,7 @@ def run_pla_classifier():
 
 
 def run_gd_classifier():
-    x, y = dg.generate_linearly_separated_data()
+    x, y = dg.generate_linearly_separated_data(class_separability=2)
 
     classifier = pc_gd.PerceptronGDClassifier(x, y)
     print("weights: ", classifier.get_weights())
@@ -82,7 +82,7 @@ def run_gd_classifier():
 
 def main():
     run_pla_classifier()
-    # run_gd_classifier(x, y)
+    # run_gd_classifier()
 
     return
 

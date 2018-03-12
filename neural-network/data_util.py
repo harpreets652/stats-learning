@@ -56,4 +56,4 @@ def run_pca(x_mat, num_principle_components):
     # [n x 256] x [256 x num_components] = [n x num_components]
     projected_data = training_data_centered.dot(eigen_vec_mat.T)
 
-    return projected_data
+    return projected_data, mean_vec, eigen_vec_mat

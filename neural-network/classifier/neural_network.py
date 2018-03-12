@@ -29,14 +29,14 @@ class FullyConnectedNetwork(object):
             weights_key = "W" + str(i)
             biases_key = "B" + str(i)
 
-            self.network[weights_key] = np.zeros((input_layer_dim, dim))
+            self.network[weights_key] = np.zeros((dim, input_layer_dim))
             self.network[biases_key] = np.zeros(dim)
             input_layer_dim = dim
 
         # output layer
         weights_key = "W" + str(self.num_layers - 1)
         biases_key = "B" + str(self.num_layers - 1)
-        self.network[weights_key] = np.zeros((input_layer_dim, num_classes))
+        self.network[weights_key] = np.zeros((num_classes, input_layer_dim))
         self.network[biases_key] = np.zeros(num_classes)
 
         return
@@ -81,14 +81,15 @@ class FullyConnectedNetwork(object):
         # delta for each layer
         output_layer_error = FullyConnectedNetwork._compute_error(prediction_vec, y)
 
-        delta[self.num_layers - 1] = output_layer_derivative.dot(output_layer_error.T)
-        for i in range(self.num_layers - 2, -1):
-            delta[i] = der_out[i].dot(self.network["W" + str(i + 1)]).dot(delta[i + 1])
+        output_layer_error_vec = np.reshape(output_layer_error, (output_layer_error.shape[0], 1))
+        delta[self.num_layers - 1] = output_layer_derivative.dot(output_layer_error_vec)
+        for i in range(self.num_layers - 2, -1, -1):
+            delta[i] = der_out[i].dot(self.network["W" + str(i + 1)].T).dot(delta[i + 1])
 
         # compute gradient
-        # todo: might need to regularize the gradient by 1/m but didn't need to for the simple perceptron
         for i in range(0, self.num_layers):
             lay_input = x if i == 0 else output_cache[i - 1]
+            # fixme: shape of delta[0] is wrong
             gradients["W" + str(i)] = (delta[i].dot(lay_input)).T
             gradients["B" + str(i)] = delta[i]
 

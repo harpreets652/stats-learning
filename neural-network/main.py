@@ -20,9 +20,12 @@ output_file_directory = "/Users/harpreetsingh/github/stats-learning/neural-netwo
 
 def get_training_data():
     data_with_labels = []
+    pca_transform = {}
     for label, file in training_data_files.items():
         class_data = du.load_class_training_data(file)
-        reduced_dim = du.run_pca(class_data, 16)
+
+        reduced_dim, mean, eigen = du.run_pca(class_data, 16)
+        pca_transform[label] = {"mean": mean, "eigen": eigen}
 
         for i in range(reduced_dim.shape[0]):
             data_with_labels.append((label, reduced_dim[i]))
@@ -35,18 +38,18 @@ def get_training_data():
         labels.append(d[0])
         train_data.append(d[1])
 
-    return np.array(train_data), np.array(labels)
+    return np.array(train_data), np.array(labels), pca_transform
 
 
 def main():
     # setup training data
-    x_train, y_train = get_training_data()
+    x_train, y_train, pca_transform = get_training_data()
 
     # train neural network
-    model = nn.FullyConnectedNetwork(16, [16, 16], 10)
+    network_model = nn.FullyConnectedNetwork(16, [18, 12], 10)
 
     # run validation set on model and print confusion matrix
-    network_solver = solver.Solver(model,
+    network_solver = solver.Solver(network_model,
                                    {"x_train": x_train, "y_train": y_train},
                                    learn_rate=0.1,
                                    num_gen=12)

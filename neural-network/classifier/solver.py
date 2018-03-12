@@ -41,7 +41,10 @@ class Solver(object):
         gradients = self._model.compute_gradient(self._X_train, self._Y_train)
 
         for key, model in self._model.network.items():
-            update_grad = gradients[key]
+            update_grad = gradients[key].real
+            if "B" in key:
+                update_grad = np.reshape(update_grad, -1)
+
             self._model.network[key] -= self._learning_rate * update_grad
 
         return

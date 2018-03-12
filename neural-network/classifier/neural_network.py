@@ -89,9 +89,11 @@ class FullyConnectedNetwork(object):
         # compute gradient
         for i in range(0, self.num_layers):
             lay_input = x if i == 0 else output_cache[i - 1]
-            # fixme: shape of delta[0] is wrong
-            gradients["W" + str(i)] = (delta[i].dot(lay_input)).T
-            gradients["B" + str(i)] = delta[i]
+            lay_input_vec = np.reshape(lay_input, (1, lay_input.shape[0]))
+            delta_row = np.reshape(delta[i], (1, delta[i].shape[0]))
+
+            gradients["W" + str(i)] = (delta[i].dot(lay_input_vec))
+            gradients["B" + str(i)] = delta_row
 
         return gradients
 

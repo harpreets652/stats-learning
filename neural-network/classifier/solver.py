@@ -1,6 +1,3 @@
-import numpy as np
-
-
 class Solver(object):
     def __init__(self, net_model, train_data, **kwargs):
         """
@@ -15,6 +12,7 @@ class Solver(object):
         self._Y_train = train_data["y_train"]
         self._learning_rate = kwargs.pop("learn_rate", 0.01)
         self._num_generations = kwargs.pop("num_gen", 10)
+        self._loss_history = []
 
         # TODO: implement offline and online gradient update
 
@@ -25,12 +23,12 @@ class Solver(object):
         Train the neural network
         """
         for i in range(self._num_generations):
-            self._step_offline()
+            self._step_offline(i)
             print("generation ", i)
 
         return
 
-    def _step_offline(self):
+    def _step_offline(self, gen):
         """
         Compute offline gradient and update the model
 
@@ -38,13 +36,15 @@ class Solver(object):
         offline updates: accumulating gradient for each x_i and then updating weights
         online updates: update weights after each x_i
         """
-        gradients = self._model.compute_gradient(self._X_train, self._Y_train)
+        gradients, loss = self._model.compute_gradient(self._X_train, self._Y_train)
+        self._loss_history.append((gen, loss.real))
 
         for key, model in self._model.network.items():
             update_grad = gradients[key].real
-            if "B" in key:
-                update_grad = np.reshape(update_grad, -1)
 
             self._model.network[key] -= self._learning_rate * update_grad
 
         return
+
+    def get_loss_history(self):
+        return self._loss_history

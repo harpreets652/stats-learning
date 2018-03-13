@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 import data_util as du
 from random import shuffle
 import classifier.neural_network as nn
@@ -41,6 +42,32 @@ def get_training_data():
     return np.array(train_data), np.array(labels), pca_transform
 
 
+def run_test_data(test_data_set, classifier):
+    # row indexed by the test label, column indexed by predicted class
+    confusion_matrix = np.zeros((10, 10))
+
+    counter = 0
+    for p in test_data_set:
+        predicted_class = classifier.classify(p[1])
+        confusion_matrix[p[0]][predicted_class] += 1
+        counter += 1
+        print("count: ", counter)
+
+    return confusion_matrix
+
+
+def visualize_grad_history(gradient_results):
+    plt.plot(gradient_results[:, 0], gradient_results[:, 1], 'r-', linewidth=0.5)
+
+    plt.title("Gradient Descent Progress")
+    plt.xlabel("Generation")
+    plt.ylabel("Average error")
+
+    plt.show()
+
+    return
+
+
 def main():
     # setup training data
     x_train, y_train, pca_transform = get_training_data()
@@ -55,6 +82,8 @@ def main():
                                    num_gen=12)
 
     network_solver.train()
+
+    visualize_grad_history(np.array(network_solver.get_loss_history()))
 
     return
 

@@ -11,7 +11,7 @@ def sigmoid_forward_pass(x, w_mat, b_vec):
     :return: numpy array, result
     """
 
-    z = np.dot(x, w_mat.T) + b_vec
+    z = np.dot(x, w_mat) + b_vec
 
     z_exp = np.exp(-1 * z)
 

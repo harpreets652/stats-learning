@@ -36,17 +36,18 @@ def visualize_grad_history(gradient_results):
 
 def main():
     # setup training data
-    x_train, y_train, pca_transform = du.get_digits_training_data(num_dimensions=16)
+    x_train, y_train, pca_transform = du.get_digits_training_data(num_dimensions=140)
     test_data = du.get_test_data(pca_transform)
 
     # train neural network
-    network_model = nn.FullyConnectedNetwork(16, [12], 10)
+    network_model = nn.FullyConnectedNetwork(140, [12], 10)
 
     # run validation set on model and print confusion matrix
     network_solver = solver.Solver(network_model,
                                    {"x_train": x_train, "y_train": y_train},
                                    learn_rate=0.0001,
-                                   num_gen=40)
+                                   num_gen=40,
+                                   gradient_update_online=0)
 
     network_solver.train()
 

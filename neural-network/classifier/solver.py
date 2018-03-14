@@ -6,14 +6,14 @@ class Solver(object):
         :param kwargs:
             - learn_rate: learning rate for gradient descent
             - num_gen: number of generations to train the network
-            - gradient_update_type: online(1) vs offline(0)
+            - gradient_update_online: online(1) vs offline(0)
         """
         self._model = net_model
         self._X_train = train_data["x_train"]
         self._Y_train = train_data["y_train"]
         self._learning_rate = kwargs.pop("learn_rate", 0.01)
         self._num_generations = kwargs.pop("num_gen", 10)
-        self._gradient_update_online = kwargs.pop("gradient_update_type", 1)
+        self._gradient_update_online = kwargs.pop("gradient_update_online", 1)
         self._loss_history = []
 
         return
@@ -45,8 +45,8 @@ class Solver(object):
             y_i = self._Y_train[i]
 
             gradients_x_i, loss_x_i = self._model.compute_gradient(x_i, y_i)
-            total_loss += loss_x_i
 
+            total_loss += loss_x_i
             self._update_model(gradients_x_i)
 
         self._loss_history.append((gen, total_loss))

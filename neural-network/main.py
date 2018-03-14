@@ -22,12 +22,12 @@ def run_test_data(test_data_set, classifier):
     return confusion_matrix
 
 
-def visualize_grad_history(gradient_results):
-    plt.plot(gradient_results[:, 0], gradient_results[:, 1], 'r-', linewidth=0.5)
+def visualize_history(results, title, x_label, y_label):
+    plt.plot(results[:, 0], results[:, 1], 'r-', linewidth=0.5)
 
-    plt.title("Gradient Descent Progress")
-    plt.xlabel("Generation")
-    plt.ylabel("Average error")
+    plt.title(title)
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
 
     plt.show()
 
@@ -36,24 +36,41 @@ def visualize_grad_history(gradient_results):
 
 def main():
     # setup training data
-    x_train, y_train, pca_transform = du.get_digits_training_data(num_dimensions=140)
+    input_size = 140
+    all_x_train, all_y_train, pca_transform = du.get_digits_training_data(num_dimensions=input_size)
     test_data = du.get_test_data(pca_transform)
 
+    num_val = int(all_x_train.shape[0] * 0.20)
+
+    x_train_test = all_x_train[0:num_val]
+    y_train_test = all_y_train[0:num_val]
+    x_train = all_x_train[num_val:]
+    y_train = all_y_train[num_val:]
+
     # train neural network
-    network_model = nn.FullyConnectedNetwork(140, [12], 10)
+    network_model = nn.FullyConnectedNetwork(input_size, [12], 10)
 
-    # run validation set on model and print confusion matrix
     network_solver = solver.Solver(network_model,
-                                   {"x_train": x_train, "y_train": y_train},
-                                   learn_rate=0.0001,
-                                   num_gen=40,
-                                   gradient_update_online=0)
+                                   {"x_train": x_train, "y_train": y_train,
+                                    "x_test": x_train_test, "y_test": y_train_test},
+                                   learn_rate=0.001,
+                                   num_gen=1000,
+                                   gradient_update_online=0,
+                                   log_level=solver.Solver.LogLevel.INFO)
 
-    network_solver.train()
+    network_model = network_solver.train()
 
-    # visualize_grad_history(np.array(network_solver.get_loss_history()))
+    visualize_history(np.array(network_solver.get_loss_history()),
+                      "Gradient Descent Progress",
+                      "Generation",
+                      "Average error")
 
-    run_test_data(test_data, network_model)
+    visualize_history(np.array(network_solver.get_test_accuracy_history()),
+                      "Test Set Accuracy history",
+                      "Generation",
+                      "Accuracy")
+
+    # run_test_data(test_data, network_model)
 
     return
 

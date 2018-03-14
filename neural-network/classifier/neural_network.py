@@ -52,7 +52,7 @@ class FullyConnectedNetwork(object):
             accumulated_loss += loss_x_i
             for key, grad in gradients_x_i.items():
                 if key in gradients:
-                    gradients[key] = gradients[key] + grad
+                    gradients[key] += grad
                 else:
                     gradients[key] = grad
 

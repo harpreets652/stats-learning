@@ -38,12 +38,12 @@ class Solver(object):
         online updates: update weights after each x_i
         """
         gradients, loss = self._model.compute_gradient(self._X_train, self._Y_train)
-        self._loss_history.append((gen, loss.real))
 
+        self._loss_history.append((gen, loss))
         for key, model in self._model.network.items():
             update_grad = gradients[key]
 
-            self._model.network[key] = self._model.network[key] - self._learning_rate * update_grad
+            self._model.network[key] = model - self._learning_rate * update_grad
 
         return
 

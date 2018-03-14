@@ -1,45 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import data_util as du
-from random import shuffle
 import classifier.neural_network as nn
 import classifier.solver as solver
-
-training_data_files = {0: "/Users/harpreetsingh/github/stats-learning/neural-network/data/train0.txt",
-                       1: "/Users/harpreetsingh/github/stats-learning/neural-network/data/train1.txt",
-                       2: "/Users/harpreetsingh/github/stats-learning/neural-network/data/train2.txt",
-                       3: "/Users/harpreetsingh/github/stats-learning/neural-network/data/train3.txt",
-                       4: "/Users/harpreetsingh/github/stats-learning/neural-network/data/train4.txt",
-                       5: "/Users/harpreetsingh/github/stats-learning/neural-network/data/train5.txt",
-                       6: "/Users/harpreetsingh/github/stats-learning/neural-network/data/train6.txt",
-                       7: "/Users/harpreetsingh/github/stats-learning/neural-network/data/train7.txt",
-                       8: "/Users/harpreetsingh/github/stats-learning/neural-network/data/train8.txt",
-                       9: "/Users/harpreetsingh/github/stats-learning/neural-network/data/train9.txt"}
+import data_util as du
 
 output_file_directory = "/Users/harpreetsingh/github/stats-learning/neural-network/results/"
-
-
-def get_training_data():
-    data_with_labels = []
-    pca_transform = {}
-    for label, file in training_data_files.items():
-        class_data = du.load_class_training_data(file)
-
-        reduced_dim, mean, eigen = du.run_pca(class_data, 16)
-        pca_transform[label] = {"mean": mean, "eigen": eigen}
-
-        for i in range(reduced_dim.shape[0]):
-            data_with_labels.append((label, reduced_dim[i]))
-
-    shuffle(data_with_labels)
-
-    labels = []
-    train_data = []
-    for d in data_with_labels:
-        labels.append(d[0])
-        train_data.append(d[1])
-
-    return np.array(train_data), np.array(labels), pca_transform
 
 
 def run_test_data(test_data_set, classifier):
@@ -53,6 +18,7 @@ def run_test_data(test_data_set, classifier):
         counter += 1
         print("count: ", counter)
 
+    print("confusion matrix: \n", confusion_matrix)
     return confusion_matrix
 
 
@@ -70,20 +36,23 @@ def visualize_grad_history(gradient_results):
 
 def main():
     # setup training data
-    x_train, y_train, pca_transform = get_training_data()
+    x_train, y_train, pca_transform = du.get_digits_training_data(num_dimensions=64)
+    test_data = du.get_test_data(pca_transform)
 
     # train neural network
-    network_model = nn.FullyConnectedNetwork(16, [18, 12], 10)
+    network_model = nn.FullyConnectedNetwork(64, [18], 10)
 
     # run validation set on model and print confusion matrix
     network_solver = solver.Solver(network_model,
                                    {"x_train": x_train, "y_train": y_train},
-                                   learn_rate=0.1,
-                                   num_gen=12)
+                                   learn_rate=0.0001,
+                                   num_gen=40)
 
     network_solver.train()
 
     visualize_grad_history(np.array(network_solver.get_loss_history()))
+
+    run_test_data(test_data, network_model)
 
     return
 

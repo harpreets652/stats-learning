@@ -29,14 +29,14 @@ class FullyConnectedNetwork(object):
             weights_key = "W" + str(i)
             biases_key = "B" + str(i)
 
-            self.network[weights_key] = np.zeros((input_layer_dim, dim))
+            self.network[weights_key] = np.random.randn(input_layer_dim, dim)
             self.network[biases_key] = np.zeros(dim)
             input_layer_dim = dim
 
         # output layer
         weights_key = "W" + str(self.num_layers - 1)
         biases_key = "B" + str(self.num_layers - 1)
-        self.network[weights_key] = np.zeros((input_layer_dim, num_classes))
+        self.network[weights_key] = np.random.randn(input_layer_dim, num_classes)
         self.network[biases_key] = np.zeros(num_classes)
 
         return
@@ -52,7 +52,7 @@ class FullyConnectedNetwork(object):
             accumulated_loss += loss_x_i
             for key, grad in gradients_x_i.items():
                 if key in gradients:
-                    gradients[key] = np.add(gradients[key], grad)
+                    gradients[key] = gradients[key] + grad
                 else:
                     gradients[key] = grad
 
@@ -83,13 +83,13 @@ class FullyConnectedNetwork(object):
         # delta for each layer
         output_layer_error, loss = FullyConnectedNetwork._compute_error(prediction_vec, y)
 
-        output_layer_error_vec = np.reshape(output_layer_error, (output_layer_error.shape[0], 1))
-        delta[self.num_layers - 1] = output_layer_derivative.dot(output_layer_error_vec)
+        output_layer_error_col = np.reshape(output_layer_error, (output_layer_error.shape[0], 1))
+        delta[self.num_layers - 1] = output_layer_derivative.dot(output_layer_error_col)
         for i in range(self.num_layers - 2, -1, -1):
             delta[i] = der_out[i].dot(self.network["W" + str(i + 1)]).dot(delta[i + 1])
 
         # compute gradient
-        for i in range(0, self.num_layers):
+        for i in range(self.num_layers):
             lay_input = x if i == 0 else output_cache[i - 1]
             lay_input_vec = np.reshape(lay_input, (1, lay_input.shape[0]))
 
@@ -124,6 +124,10 @@ class FullyConnectedNetwork(object):
         target_vec[target_label] = 1
 
         error_vec = prediction_vec - target_vec
-        loss = 0.5 * np.sum(error_vec)
+        loss = 0.5 * np.sum(np.square(error_vec))
 
         return error_vec, loss
+
+    def classify(self, x):
+        cache, prediction = self._network_forward(x)
+        return np.argmax(prediction)

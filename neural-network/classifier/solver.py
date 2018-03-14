@@ -25,6 +25,7 @@ class Solver(object):
         for i in range(self._num_generations):
             self._step_offline(i)
             print("generation ", i)
+            # TODO: COMPUTE ACCURACY OF TRAINING SET
 
         return
 
@@ -40,9 +41,9 @@ class Solver(object):
         self._loss_history.append((gen, loss.real))
 
         for key, model in self._model.network.items():
-            update_grad = gradients[key].real
+            update_grad = gradients[key]
 
-            self._model.network[key] -= self._learning_rate * update_grad
+            self._model.network[key] = self._model.network[key] - self._learning_rate * update_grad
 
         return
 

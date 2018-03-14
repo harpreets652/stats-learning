@@ -6,7 +6,7 @@ def sigmoid_forward_pass(x, w_mat, b_vec):
     single forward pass through a layer; using sigmoid as activation function
 
     :param x: numpy array, matrix or vector of inputs (each row represents one input)
-    :param w_mat: numpy array, matrix of weights (each row represents a unit)
+    :param w_mat: numpy array, matrix of weights (each column represents a unit)
     :param b_vec: numpy array, vector of biases (column vector)
     :return: numpy array, result
     """

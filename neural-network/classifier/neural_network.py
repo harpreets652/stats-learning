@@ -41,13 +41,13 @@ class FullyConnectedNetwork(object):
 
         return
 
-    def compute_gradient(self, x_mat, y_vec):
+    def compute_gradient_batch(self, x_mat, y_vec):
         gradients = {}
         accumulated_loss = 0
 
         for i in range(x_mat.shape[0]):
             x_i = x_mat[i]
-            gradients_x_i, loss_x_i = self._grad_step(x_i, y_vec[i])
+            gradients_x_i, loss_x_i = self.compute_gradient(x_i, y_vec[i])
 
             accumulated_loss += loss_x_i
             for key, grad in gradients_x_i.items():
@@ -59,7 +59,7 @@ class FullyConnectedNetwork(object):
         total_loss = (1 / x_mat.shape[0]) * accumulated_loss
         return gradients, total_loss
 
-    def _grad_step(self, x, y):
+    def compute_gradient(self, x, y):
         """
         :param x: numpy array, vector
         :param y: scalar labeled output

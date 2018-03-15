@@ -35,12 +35,17 @@ def visualize_history(results, title, x_label, y_label):
 
 
 def main():
-    # setup training data
+    # configuration
     input_size = 140
+    learning_rate = 0.001
+    num_gen = 5000
+    percent_test_set = 0.20
+    online_update = 0
+
     all_x_train, all_y_train, pca_transform = du.get_digits_training_data(num_dimensions=input_size)
     test_data = du.get_test_data(pca_transform)
 
-    num_val = int(all_x_train.shape[0] * 0.20)
+    num_val = int(all_x_train.shape[0] * percent_test_set)
 
     x_train_test = all_x_train[0:num_val]
     y_train_test = all_y_train[0:num_val]
@@ -48,18 +53,19 @@ def main():
     y_train = all_y_train[num_val:]
 
     # train neural network
-    network_model = nn.FullyConnectedNetwork(input_size, [12], 10)
+    network_model = nn.FullyConnectedNetwork(input_size, [16, 16], 10)
 
     network_solver = solver.Solver(network_model,
                                    {"x_train": x_train, "y_train": y_train,
                                     "x_test": x_train_test, "y_test": y_train_test},
-                                   learn_rate=0.001,
-                                   num_gen=1000,
-                                   gradient_update_online=0,
+                                   learn_rate=learning_rate,
+                                   num_gen=num_gen,
+                                   gradient_update_online=online_update,
                                    log_level=solver.Solver.LogLevel.INFO)
 
     network_model = network_solver.train()
 
+    # visualize results
     visualize_history(np.array(network_solver.get_loss_history()),
                       "Gradient Descent Progress",
                       "Generation",
@@ -70,7 +76,8 @@ def main():
                       "Generation",
                       "Accuracy")
 
-    # run_test_data(test_data, network_model)
+    # run test/validation set
+    run_test_data(test_data, network_model)
 
     return
 

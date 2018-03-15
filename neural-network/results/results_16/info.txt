@@ -1,0 +1,6 @@
+number of generations:  10000
+optimization type:  Offline
+Learning Rate:  0.001
+hidden layers: [16]
+input size: 16
+percent test set: 20

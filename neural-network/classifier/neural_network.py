@@ -7,14 +7,26 @@ class FullyConnectedNetwork(object):
     Fully connected neural network with a configurable number of hidden dimensions
     """
 
-    def __init__(self, input_dimensions, hidden_dimensions, num_classes):
+    def __init__(self, input_dimensions, hidden_dimensions, num_classes, **kwargs):
         """
         Initialization
 
         :param input_dimensions: Integer, size of the input layer
         :param hidden_dimensions: Array[Integer], number of units per hidden layer
         :param num_classes: Integer, number of classes in the inputs
+        :param kwargs:
+            - activation: 'sigmoid' | 'relu'
         """
+
+        activation_input = kwargs.pop("activation", "sigmoid")
+
+        if not hasattr(layer, activation_input + "_forward"):
+            raise RuntimeError(f"Activation function {activation_input}_forward not found")
+        self._layer_forward = getattr(layer, activation_input + "_forward")
+
+        if not hasattr(layer, activation_input + "_derivative"):
+            raise RuntimeError(f"Activation function {activation_input}_derivative not found")
+        self._layer_derivative = getattr(layer, activation_input + "_derivative")
 
         self.num_layers = len(hidden_dimensions) + 1
         self.network = {}
@@ -76,9 +88,9 @@ class FullyConnectedNetwork(object):
 
         # derivative w.r.t. output
         for lay, out in output_cache.items():
-            der_out[lay] = layer.sigmoid_derivative(out)
+            der_out[lay] = self._layer_derivative(out)
 
-        output_layer_derivative = layer.sigmoid_derivative(prediction_vec)
+        output_layer_derivative = self._layer_derivative(prediction_vec)
 
         # delta for each layer
         output_layer_error, loss = FullyConnectedNetwork._compute_error(prediction_vec, y)
@@ -106,15 +118,15 @@ class FullyConnectedNetwork(object):
 
         # forward pass through hidden units
         for l in range(self.num_layers - 1):
-            output = layer.sigmoid_forward(layer_input,
-                                           self.network["W" + str(l)],
-                                           self.network["B" + str(l)])
+            output = self._layer_forward(layer_input,
+                                         self.network["W" + str(l)],
+                                         self.network["B" + str(l)])
             output_cache[l] = output
             layer_input = output
 
-        prediction = layer.sigmoid_forward(layer_input,
-                                           self.network["W" + str(self.num_layers - 1)],
-                                           self.network["B" + str(self.num_layers - 1)])
+        prediction = self._layer_forward(layer_input,
+                                         self.network["W" + str(self.num_layers - 1)],
+                                         self.network["B" + str(self.num_layers - 1)])
 
         return output_cache, prediction
 

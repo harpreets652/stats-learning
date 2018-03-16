@@ -36,7 +36,7 @@ def visualize_history(results, title, x_label, y_label):
 
 def main():
     # configuration
-    input_size = 140
+    input_size = 16
     learning_rate = 0.001
     num_gen = 10000
     percent_test_set = 0.20
@@ -53,7 +53,7 @@ def main():
     y_train = all_y_train[num_val:]
 
     # train neural network
-    network_model = nn.FullyConnectedNetwork(input_size, [16, 16], 10)
+    network_model = nn.FullyConnectedNetwork(input_size, [16, 16], 10, activation="relu")
 
     network_solver = solver.Solver(network_model,
                                    {"x_train": x_train, "y_train": y_train,

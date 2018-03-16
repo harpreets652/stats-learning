@@ -16,12 +16,11 @@ class Solver(object):
             - learn_rate: learning rate for gradient descent
             - num_gen: number of generations to train the network
             - gradient_update_online: online(1) vs offline(0)
-            - verbose: print a lot of stuff
+            - log_level: :class:'Solver.LogLevel'
         """
         self._model = net_model
         self._X_train = train_data["x_train"]
         self._Y_train = train_data["y_train"]
-
         self._X_test = train_data["x_test"] if "x_test" in train_data else np.array([])
         self._Y_test = train_data["y_test"] if "y_test" in train_data else np.array([])
 

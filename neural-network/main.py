@@ -38,7 +38,7 @@ def main():
     # configuration
     input_size = 140
     learning_rate = 0.001
-    num_gen = 5000
+    num_gen = 10000
     percent_test_set = 0.20
     online_update = 0
 

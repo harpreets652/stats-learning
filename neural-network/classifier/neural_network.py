@@ -76,9 +76,9 @@ class FullyConnectedNetwork(object):
 
         # derivative w.r.t. output
         for lay, out in output_cache.items():
-            der_out[lay] = layer.compute_sigmoid_derivative(out)
+            der_out[lay] = layer.sigmoid_derivative(out)
 
-        output_layer_derivative = layer.compute_sigmoid_derivative(prediction_vec)
+        output_layer_derivative = layer.sigmoid_derivative(prediction_vec)
 
         # delta for each layer
         output_layer_error, loss = FullyConnectedNetwork._compute_error(prediction_vec, y)
@@ -106,15 +106,15 @@ class FullyConnectedNetwork(object):
 
         # forward pass through hidden units
         for l in range(self.num_layers - 1):
-            output = layer.sigmoid_forward_pass(layer_input,
-                                                self.network["W" + str(l)],
-                                                self.network["B" + str(l)])
+            output = layer.sigmoid_forward(layer_input,
+                                           self.network["W" + str(l)],
+                                           self.network["B" + str(l)])
             output_cache[l] = output
             layer_input = output
 
-        prediction = layer.sigmoid_forward_pass(layer_input,
-                                                self.network["W" + str(self.num_layers - 1)],
-                                                self.network["B" + str(self.num_layers - 1)])
+        prediction = layer.sigmoid_forward(layer_input,
+                                           self.network["W" + str(self.num_layers - 1)],
+                                           self.network["B" + str(self.num_layers - 1)])
 
         return output_cache, prediction
 

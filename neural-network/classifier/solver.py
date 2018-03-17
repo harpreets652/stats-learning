@@ -13,7 +13,7 @@ class Solver(object):
         :param net_model: neural network model
         :param train_data: a dictionary with the training vectors and labels; shuffled
         :param kwargs:
-            - learn_rate: learning rate for gradient descent
+            - optimization: dict - {"type": "sgd | sgd_m", "learn_rate": float, "momentum": float (if sgd_m)}
             - num_gen: number of generations to train the network
             - gradient_update_online: online(1) vs offline(0)
             - log_level: :class:'Solver.LogLevel'
@@ -24,7 +24,15 @@ class Solver(object):
         self._X_test = train_data["x_test"] if "x_test" in train_data else np.array([])
         self._Y_test = train_data["y_test"] if "y_test" in train_data else np.array([])
 
-        self._learning_rate = kwargs.pop("learn_rate", 0.01)
+        optimization = kwargs.pop("optimization", {"type": "sgd_m", "learn_rate": 0.01, "momentum": 0.5})
+
+        self._optimization_type = optimization.get("type", "sgd")
+        self._learning_rate = optimization.get("learning_rate", 0.001)
+
+        if self._optimization_type == "sgd_m":
+            self._momentum = optimization.get("momentum", 0.9)
+            self._momentum_cache = {}
+
         self._num_generations = kwargs.pop("num_gen", 10)
         self._gradient_update_online = kwargs.pop("gradient_update_online", 1)
         self._log_level = kwargs.pop("log_level", Solver.LogLevel.NONE)
@@ -122,6 +130,13 @@ class Solver(object):
         for key, model in self._model.network.items():
             update_grad = w_gradients[key]
 
-            self._model.network[key] = model - self._learning_rate * update_grad
+            if self._optimization_type == "sgd":
+                self._model.network[key] = model - self._learning_rate * update_grad
+            elif self._optimization_type == "sgd_m":
+                vel = self._momentum_cache.get(key, np.zeros_like(model))
+
+                vel = self._momentum * vel - self._learning_rate * update_grad
+                self._momentum_cache[key] = vel
+                self._model.network[key] = model + vel
 
         return

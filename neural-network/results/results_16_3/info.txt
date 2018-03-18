@@ -5,4 +5,4 @@ hidden layers: [16]
 input size: 16
 percent test set: 20
 time: ~2.5 hours
-momentum stochastic gradient descent
+momentum stochastic gradient descent: 0.9

@@ -54,12 +54,12 @@ def main():
     y_train = all_y_train[num_val:]
 
     # train neural network
-    network_model = nn.FullyConnectedNetwork(input_size, [16], 10, activation="sigmoid")
+    network_model = nn.FullyConnectedNetwork(input_size, [16], 10, activation="relu")
 
     network_solver = solver.Solver(network_model,
                                    {"x_train": x_train, "y_train": y_train,
                                     "x_test": x_train_test, "y_test": y_train_test},
-                                   optimization={"type": "sgd_m", "learn_rate": learning_rate, "momentum": momentum},
+                                   optimization={"type": "sgd", "learn_rate": learning_rate, "momentum": momentum},
                                    num_gen=num_gen,
                                    gradient_update_online=online_update,
                                    log_level=solver.Solver.LogLevel.INFO)

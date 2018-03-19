@@ -28,6 +28,14 @@ class FullyConnectedNetwork(object):
             raise RuntimeError(f"Activation function {activation_input}_derivative not found")
         self._layer_derivative = getattr(layer, activation_input + "_derivative")
 
+        if not hasattr(layer, activation_input + "_loss_derivative"):
+            raise RuntimeError(f"Activation function {activation_input}_loss_derivative not found")
+        self._network_loss = getattr(layer, activation_input + "_loss_derivative")
+
+        if not hasattr(layer, activation_input + "_prediction"):
+            raise RuntimeError(f"Activation function {activation_input}_prediction not found")
+        self._network_prediction = getattr(layer, activation_input + "_prediction")
+
         self.num_layers = len(hidden_dimensions) + 1
         self.network = {}
 
@@ -93,7 +101,7 @@ class FullyConnectedNetwork(object):
         output_layer_derivative = self._layer_derivative(prediction_vec)
 
         # delta for each layer
-        output_layer_error, loss = FullyConnectedNetwork._compute_error(prediction_vec, y)
+        output_layer_error, loss = self._network_loss(prediction_vec, y)
 
         output_layer_error_col = np.reshape(output_layer_error, (output_layer_error.shape[0], 1))
         delta[self.num_layers - 1] = output_layer_derivative.dot(output_layer_error_col)
@@ -130,16 +138,8 @@ class FullyConnectedNetwork(object):
 
         return output_cache, prediction
 
-    @staticmethod
-    def _compute_error(prediction_vec, target_label):
-        target_vec = np.zeros((prediction_vec.shape[0]))
-        target_vec[target_label] = 1
-
-        error_vec = prediction_vec - target_vec
-        loss = 0.5 * np.sum(np.square(error_vec))
-
-        return error_vec, loss
-
     def classify(self, x):
-        cache, prediction = self._network_forward(x)
-        return np.argmax(prediction)
+        cache, forward_pass = self._network_forward(x)
+        predictions = self._network_prediction(forward_pass)
+
+        return np.argmax(predictions)

@@ -19,12 +19,33 @@ def sigmoid_forward(x, w_mat, b_vec):
 
 
 def sigmoid_derivative(output_vec):
+    """
+    derivative of sigmoid
+    """
     derivative = np.zeros((output_vec.shape[0], output_vec.shape[0]))
 
     for i, val in enumerate(output_vec):
         derivative[i][i] = val * (1 - val)
 
     return derivative
+
+
+def sigmoid_loss_derivative(prediction_vec, target_label):
+    target_vec = np.zeros((prediction_vec.shape[0]))
+    target_vec[target_label] = 1
+
+    error_vec = prediction_vec - target_vec
+    loss = 0.5 * np.sum(np.square(error_vec))
+
+    return error_vec, loss
+
+
+def sigmoid_prediction(forward_prop_vec):
+    """
+    :param forward_prop_vec:
+    :return: pass-through function
+    """
+    return forward_prop_vec
 
 
 def relu_forward(x, w_mat, b_vec):
@@ -46,9 +67,42 @@ def relu_forward(x, w_mat, b_vec):
 
 
 def relu_derivative(output_vec):
+    """
+    relu derivative
+    """
     derivative = np.zeros((output_vec.shape[0], output_vec.shape[0]))
 
     for i, val in enumerate(output_vec):
         derivative[i][i] = (val >= 0)
 
     return derivative
+
+
+def relu_loss_derivative(prediction_vec, target_label):
+    probabilities = softmax(prediction_vec)
+    # first compute the loss
+    loss = - np.log(probabilities[target_label])
+
+    # then compute the derivative vector
+    probabilities[target_label] -= 1
+
+    return probabilities, loss
+
+
+def relu_prediction(forward_prop_vec):
+    """
+    use softmax to compute probabilities
+    :param forward_prop_vec:
+    :return: probabilities vector
+    """
+    return softmax(forward_prop_vec)
+
+
+def softmax(score_vec):
+    """
+    implements softmax
+    """
+    exp_output = np.exp(score_vec)
+    probs = exp_output / np.sum(exp_output)
+
+    return probs

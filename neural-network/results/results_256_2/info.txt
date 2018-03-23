@@ -1,4 +1,4 @@
-number of generations:  500
+number of generations:  200
 optimization type:  Online
 Learning Rate:  0.001 with momentum
 hidden layers: [20, 15]

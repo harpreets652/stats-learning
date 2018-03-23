@@ -41,7 +41,7 @@ def main():
     momentum = 0.9
     num_gen = 10000
     percent_test_set = 0.20
-    online_update = 0
+    online_update = 1
 
     all_x_train, all_y_train, pca_transform = du.get_digits_training_data(num_dimensions=input_size)
     test_data = du.get_test_data(pca_transform)
@@ -54,7 +54,7 @@ def main():
     y_train = all_y_train[num_val:]
 
     # train neural network
-    network_model = nn.FullyConnectedNetwork(input_size, [16], 10, activation="relu")
+    network_model = nn.FullyConnectedNetwork(input_size, [16], 10, activation="sigmoid")
 
     network_solver = solver.Solver(network_model,
                                    {"x_train": x_train, "y_train": y_train,

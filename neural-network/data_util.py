@@ -1,20 +1,23 @@
+import operator
 from random import shuffle
 
 import numpy as np
-import operator
+import csv
 
-training_data_files = {0: "/Users/harpreetsingh/github/stats-learning/neural-network/data/train0.txt",
-                       1: "/Users/harpreetsingh/github/stats-learning/neural-network/data/train1.txt",
-                       2: "/Users/harpreetsingh/github/stats-learning/neural-network/data/train2.txt",
-                       3: "/Users/harpreetsingh/github/stats-learning/neural-network/data/train3.txt",
-                       4: "/Users/harpreetsingh/github/stats-learning/neural-network/data/train4.txt",
-                       5: "/Users/harpreetsingh/github/stats-learning/neural-network/data/train5.txt",
-                       6: "/Users/harpreetsingh/github/stats-learning/neural-network/data/train6.txt",
-                       7: "/Users/harpreetsingh/github/stats-learning/neural-network/data/train7.txt",
-                       8: "/Users/harpreetsingh/github/stats-learning/neural-network/data/train8.txt",
-                       9: "/Users/harpreetsingh/github/stats-learning/neural-network/data/train9.txt"}
+digits_training_data_files = {0: "/Users/harpreetsingh/github/stats-learning/neural-network/data/train0.txt",
+                              1: "/Users/harpreetsingh/github/stats-learning/neural-network/data/train1.txt",
+                              2: "/Users/harpreetsingh/github/stats-learning/neural-network/data/train2.txt",
+                              3: "/Users/harpreetsingh/github/stats-learning/neural-network/data/train3.txt",
+                              4: "/Users/harpreetsingh/github/stats-learning/neural-network/data/train4.txt",
+                              5: "/Users/harpreetsingh/github/stats-learning/neural-network/data/train5.txt",
+                              6: "/Users/harpreetsingh/github/stats-learning/neural-network/data/train6.txt",
+                              7: "/Users/harpreetsingh/github/stats-learning/neural-network/data/train7.txt",
+                              8: "/Users/harpreetsingh/github/stats-learning/neural-network/data/train8.txt",
+                              9: "/Users/harpreetsingh/github/stats-learning/neural-network/data/train9.txt"}
 
-test_data_file = "/Users/harpreetsingh/github/stats-learning/neural-network/data/test.txt"
+digits_test_data_file = "/Users/harpreetsingh/github/stats-learning/neural-network/data/test.txt"
+
+phoneme_data_file = "/Users/harpreetsingh/github/stats-learning/neural-network/data/phoneme.csv"
 
 
 def load_class_training_data(file_name):
@@ -59,7 +62,7 @@ def run_pca(x_mat, num_principle_components):
 def get_digits_training_data(num_dimensions=16):
     data_with_labels = []
     pca_transform = {}
-    for label, file in training_data_files.items():
+    for label, file in digits_training_data_files.items():
         class_data = load_class_training_data(file)
 
         if num_dimensions < class_data.shape[1]:
@@ -81,9 +84,9 @@ def get_digits_training_data(num_dimensions=16):
     return np.array(train_data), np.array(labels), pca_transform
 
 
-def get_test_data(pca_transform=None):
+def get_digits_test_data(pca_transform=None):
     test_data_buffer = []
-    with open(test_data_file, 'r') as file:
+    with open(digits_test_data_file, 'r') as file:
         for row in file:
             data_string = row.strip().split()
             data = []
@@ -103,3 +106,51 @@ def get_test_data(pca_transform=None):
             test_data_buffer.append((class_label, data_np))
 
     return test_data_buffer
+
+
+def get_phoneme_data():
+    """
+    reads phoneme data and creates training and testing data
+    data: row_name(seq), x.1...256(float), g(string), speaker(string)
+
+    :return: x_train, y_train, test_data[(label, features)], phoneme_index_mapping
+    """
+
+    phoneme_index_dict = {"aa": 0, "ao": 1, "dcl": 2, "iy": 3, "sh": 4}
+    bucketed_data = {}
+
+    feature_str = "x."
+    with open(phoneme_data_file, "r") as csv_file:
+        phoneme_reader = csv.DictReader(csv_file)
+
+        for line in phoneme_reader:
+            feature_data = []
+            for i in range(1, 257):
+                feature_data.append(float(line[feature_str + str(i)].strip()))
+
+            label = phoneme_index_dict[line["g"].strip()]
+            if label not in bucketed_data:
+                bucketed_data[label] = []
+
+            bucketed_data[label].append((label, np.array(feature_data)))
+
+    # partition bucketed data into training and test
+    train_intermediate = []
+    test_intermediate = []
+
+    for key, data in bucketed_data.items():
+        num_test_data = int(len(data) * 0.20)
+        test_intermediate += data[0:num_test_data]
+        train_intermediate += data[num_test_data:]
+
+    # shuffle training data and separate features from labels
+    shuffle(train_intermediate)
+
+    x_train = []
+    y_train = []
+
+    for d in train_intermediate:
+        y_train.append(d[0])
+        x_train.append(d[1])
+
+    return np.array(x_train), np.array(y_train), test_intermediate, phoneme_index_dict

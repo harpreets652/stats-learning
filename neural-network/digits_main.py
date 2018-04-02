@@ -44,7 +44,7 @@ def main():
     online_update = 1
 
     all_x_train, all_y_train, pca_transform = du.get_digits_training_data(num_dimensions=input_size)
-    test_data = du.get_test_data(pca_transform)
+    test_data = du.get_digits_test_data(pca_transform)
 
     num_val = int(all_x_train.shape[0] * percent_test_set)
 

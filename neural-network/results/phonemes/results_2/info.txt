@@ -1,0 +1,7 @@
+number of generations:  150
+optimization type:  Online
+Learning Rate:  0.001
+momentum: 0.9
+hidden layers: [40]
+input size: 256
+percent test set: 10

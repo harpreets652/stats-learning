@@ -36,10 +36,11 @@ def main():
     # configuration
     input_size = 256
     learning_rate = 0.001
-    momentum = 0.9
-    num_gen = 50
+    momentum = 0.5
+    num_gen = 250
     percent_test_set = 0.10
     online_update = 1
+    hidden_layer_dimensions = [20, 15]
 
     # training and testing data
     all_x_train, all_y_train, test_data, phoneme_label_map = du.get_phoneme_data()
@@ -52,7 +53,7 @@ def main():
     y_train = all_y_train[num_val:]
 
     # train neural network
-    network_model = nn.FullyConnectedNetwork(input_size, [20, 15], 5, activation="sigmoid")
+    network_model = nn.FullyConnectedNetwork(input_size, hidden_layer_dimensions, 5, activation="sigmoid")
 
     network_solver = solver.Solver(network_model,
                                    {"x_train": x_train, "y_train": y_train,
@@ -77,6 +78,8 @@ def main():
 
     # run test
     run_test_data(test_data, network_model)
+    print("hidden layer dimensions: ", hidden_layer_dimensions)
+    print(phoneme_label_map)
 
     return
 

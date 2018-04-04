@@ -36,11 +36,12 @@ def main():
     # configuration
     input_size = 256
     learning_rate = 0.001
-    momentum = 0.5
-    num_gen = 250
+    momentum = 0.75
+    decay_rate = 0.99
+    num_gen = 300
     percent_test_set = 0.10
     online_update = 1
-    hidden_layer_dimensions = [20, 15]
+    hidden_layer_dimensions = [30]
 
     # training and testing data
     all_x_train, all_y_train, test_data, phoneme_label_map = du.get_phoneme_data()
@@ -58,7 +59,10 @@ def main():
     network_solver = solver.Solver(network_model,
                                    {"x_train": x_train, "y_train": y_train,
                                     "x_test": x_train_validation, "y_test": y_train_validation},
-                                   optimization={"type": "sgd_m", "learn_rate": learning_rate, "momentum": momentum},
+                                   optimization={"type": "sgd_nest",
+                                                 "learn_rate": learning_rate,
+                                                 "momentum": momentum,
+                                                 "decay_rate": decay_rate},
                                    num_gen=num_gen,
                                    gradient_update_online=online_update,
                                    log_level=solver.Solver.LogLevel.INFO)

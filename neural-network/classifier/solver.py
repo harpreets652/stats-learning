@@ -13,7 +13,10 @@ class Solver(object):
         :param net_model: neural network model
         :param train_data: a dictionary with the training vectors and labels; shuffled
         :param kwargs:
-            - optimization: dict - {"type": "sgd | sgd_m", "learn_rate": float, "momentum": float (if sgd_m)}
+            - optimization: dict - {"type": "sgd | sgd_m | sgd_rms | sgd_nest",
+                                    "learn_rate": float,
+                                    "momentum": float (if sgd_m | sgd_nest)}
+                                    "decay_rate": float (if sgd_rms)
             - num_gen: number of generations to train the network
             - gradient_update_online: online(1) vs offline(0)
             - log_level: :class:'Solver.LogLevel'
@@ -26,12 +29,13 @@ class Solver(object):
 
         optimization = kwargs.pop("optimization", {"type": "sgd_m", "learn_rate": 0.01, "momentum": 0.5})
 
-        self._optimization_type = optimization.get("type", "sgd")
-        self._learning_rate = optimization.get("learning_rate", 0.001)
+        self._optimization_type = optimization.get("type", "sgd_m")
+        self._optimization_config = {"learning_rate": optimization.get("learning_rate", 0.001)}
 
-        if self._optimization_type == "sgd_m":
-            self._momentum = optimization.get("momentum", 0.9)
-            self._momentum_cache = {}
+        if self._optimization_type in ("sgd_m", "sgd_rms", "sgd_nest"):
+            self._optimization_config["momentum"] = optimization.get("momentum", 0.9)
+            self._optimization_config["decay_rate"] = optimization.get("decay_rate", 0.9)
+            self._optimization_cache = {}
 
         self._num_generations = kwargs.pop("num_gen", 10)
         self._gradient_update_online = kwargs.pop("gradient_update_online", 1)
@@ -49,7 +53,7 @@ class Solver(object):
         if self._log_level.value >= Solver.LogLevel.INFO.value:
             print("number of generations: ", self._num_generations)
             print("optimization type: ", "Online" if self._gradient_update_online else "Offline")
-            print("Learning Rate: ", self._learning_rate)
+            print("Learning Rate: ", self._optimization_config["learning_rate"])
 
         for i in range(self._num_generations):
             if self._log_level.value >= Solver.LogLevel.INFO.value:
@@ -131,12 +135,32 @@ class Solver(object):
             update_grad = w_gradients[key]
 
             if self._optimization_type == "sgd":
-                self._model.network[key] = model - self._learning_rate * update_grad
+                self._model.network[key] = model - self._optimization_config["learning_rate"] * update_grad
             elif self._optimization_type == "sgd_m":
-                vel = self._momentum_cache.get(key, np.zeros_like(model))
+                vel = self._optimization_cache.get(key, np.zeros_like(model))
 
-                vel = self._momentum * vel - self._learning_rate * update_grad
-                self._momentum_cache[key] = vel
+                vel = self._optimization_config["momentum"] * vel - self._optimization_config[
+                    "learning_rate"] * update_grad
+                self._optimization_cache[key] = vel
                 self._model.network[key] = model + vel
+            elif self._optimization_type == "sgd_nest":
+                vel = self._optimization_cache.get(key, np.zeros_like(model))
+
+                vel_prev = vel
+                momentum = self._optimization_config["momentum"]
+
+                vel = momentum * vel - self._optimization_config["learning_rate"] * update_grad
+
+                self._optimization_cache[key] = vel
+                self._model.network[key] = model + (-momentum * vel_prev + ((1 + momentum) * vel))
+            elif self._optimization_type == "sgd_rms":
+                epsilon = 1e-4
+                cache = self._optimization_cache.get(key, np.zeros_like(model))
+
+                cache = self._optimization_config["decay_rate"] * cache + (
+                        1 - self._optimization_config["decay_rate"]) * (update_grad ** 2)
+                self._optimization_cache[key] = cache
+                self._model.network[key] += - self._optimization_config["learning_rate"] * update_grad / (
+                            np.sqrt(cache) + epsilon)
 
         return

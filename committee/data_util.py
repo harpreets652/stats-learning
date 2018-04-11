@@ -1,18 +1,18 @@
 import numpy as np
 
 
-def generate_data(step_size, circle_center=(0.5, 0.5), circle_radius=0.25):
+def generate_data(size, circle_center=(0.5, 0.5), circle_radius=0.25):
     """
     Generates labeled data in a unit square. Positive data inside of specified circle, negative outside
 
-    :param step_size: granularity of the grid
+    :param size: granularity of the grid
     :param circle_center: center of the circle containing positive data
     :param circle_radius: radius of the circle
     :return:  2-dim x, 1-dim y training data
     """
     # each element in both arrays corresponds to a point in the grid
-    x1, x2 = np.meshgrid(np.linspace(0, 1, step_size),
-                         np.linspace(0, 1, step_size))
+    x1, x2 = np.meshgrid(np.linspace(0, 1, size),
+                         np.linspace(0, 1, size))
 
     x, y = [], []
     for i in range(0, x1.shape[0]):

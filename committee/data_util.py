@@ -1,18 +1,18 @@
 import numpy as np
 
 
-def generate_data(size, circle_center=(0.5, 0.5), circle_radius=0.25):
+def generate_data(grid_partition_size, circle_center=(0.5, 0.5), circle_radius=0.25):
     """
     Generates labeled data in a unit square. Positive data inside of specified circle, negative outside
 
-    :param size: granularity of the grid
+    :param grid_partition_size: size of the grid
     :param circle_center: center of the circle containing positive data
     :param circle_radius: radius of the circle
     :return:  2-dim x, 1-dim y training data
     """
     # each element in both arrays corresponds to a point in the grid
-    x1, x2 = np.meshgrid(np.linspace(0, 1, size),
-                         np.linspace(0, 1, size))
+    x1, x2 = np.meshgrid(np.linspace(0, 1, grid_partition_size),
+                         np.linspace(0, 1, grid_partition_size))
 
     x, y = [], []
     for i in range(0, x1.shape[0]):
@@ -24,6 +24,39 @@ def generate_data(size, circle_center=(0.5, 0.5), circle_radius=0.25):
             y.append(pt_label)
 
     return np.array(x), np.array(y)
+
+
+def generate_lines(grid_partition_size):
+    """
+    Generates lines in a unit grid partitioned by parameter
+
+    :param grid_partition_size: size of the grid
+    :return: 2D array, [coefficient, bias] f(x)=ax+b
+    """
+    m_intermediate = np.concatenate((np.linspace(-1, 0, grid_partition_size),
+                                     np.linspace(0, 1, grid_partition_size)), 0)
+    m_dup = []
+    for i in m_intermediate:
+        for j in m_intermediate:
+            if j == 0:
+                m_dup.append(0)
+            else:
+                m_dup.append(i / j)
+
+    m = np.unique(m_dup)
+    b = np.unique(np.concatenate((np.linspace(-2, -1, grid_partition_size),
+                                  np.linspace(-1, 0, grid_partition_size),
+                                  np.linspace(0, 1, grid_partition_size),
+                                  np.linspace(1, 2, grid_partition_size)),
+                                 0))
+
+    # list of (coefficient, bias)
+    lines = []
+    for i in m:
+        for j in b:
+            lines.append((i, j))
+
+    return np.array(lines)
 
 
 def is_point_in_circle(circle_center, radius, test_point):

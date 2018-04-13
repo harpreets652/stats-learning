@@ -20,41 +20,27 @@ def generate_data(grid_partition_size, circle_center=(0.5, 0.5), circle_radius=0
             x.append((x1[i][j], x2[i][j]))
 
             # set label: 1 if in circle, -1 if outside
-            pt_label = 1 if is_point_in_circle(circle_center, circle_radius, (x1[i][j], x2[i][j])) else 0
+            pt_label = 1 if is_point_in_circle(circle_center, circle_radius, (x1[i][j], x2[i][j])) else -1
             y.append(pt_label)
 
     return np.array(x), np.array(y)
 
 
-def generate_lines(grid_partition_size):
+def generate_lines(num_of_lines):
     """
-    Generates lines in a unit grid partitioned by parameter
+    Generates lines in a unit grid partitioned by the parameter
 
-    :param grid_partition_size: size of the grid
-    :return: 2D array, [coefficient, bias] f(x)=ax+b
+    :param num_of_lines: number of lines
+    :return: 2D array, [b, a] y=ax+b => ax + (-1)y + b = 0
     """
-    m_intermediate = np.concatenate((np.linspace(-1, 0, grid_partition_size),
-                                     np.linspace(0, 1, grid_partition_size)), 0)
-    m_dup = []
-    for i in m_intermediate:
-        for j in m_intermediate:
-            if j == 0:
-                m_dup.append(0)
-            else:
-                m_dup.append(i / j)
 
-    m = np.unique(m_dup)
-    b = np.unique(np.concatenate((np.linspace(-2, -1, grid_partition_size),
-                                  np.linspace(-1, 0, grid_partition_size),
-                                  np.linspace(0, 1, grid_partition_size),
-                                  np.linspace(1, 2, grid_partition_size)),
-                                 0))
-
-    # list of (coefficient, bias)
     lines = []
-    for i in m:
-        for j in b:
-            lines.append((i, j))
+    for i in range(num_of_lines):
+        x1 = np.round(np.random.randn(2), 2)
+        x2 = np.round(np.random.randn(2), 2)
+        coefficients = np.polyfit(x1, x2, 1)
+
+        lines.append((coefficients[1], coefficients[0]))
 
     return np.array(lines)
 

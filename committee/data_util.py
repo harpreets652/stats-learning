@@ -47,7 +47,7 @@ def generate_lines(num_of_lines):
 
 def _get_rand_0_1():
     while True:
-        x = np.round(np.random.randn(2), 2)
+        x = np.round(np.random.random_sample(2), 2)
         if 0 <= x[0] <= 1 and 0 <= x[1] <= 1:
             break
     return x

@@ -91,8 +91,10 @@ def other_stuff():
     g = np.insert(x, 0, 1, axis=1)
     print("g: \n", g)
 
+    print("sum: \n", np.sum(x, axis=0))
+
     return
 
 
 if __name__ == '__main__':
-    generate_rand_lines()
+    other_stuff()

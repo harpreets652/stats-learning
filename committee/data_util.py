@@ -36,13 +36,21 @@ def generate_lines(num_of_lines):
 
     lines = []
     for i in range(num_of_lines):
-        x1 = np.round(np.random.randn(2), 2)
-        x2 = np.round(np.random.randn(2), 2)
+        x1 = _get_rand_0_1()
+        x2 = _get_rand_0_1()
         coefficients = np.polyfit(x1, x2, 1)
 
         lines.append((coefficients[1], coefficients[0]))
 
     return np.array(lines)
+
+
+def _get_rand_0_1():
+    while True:
+        x = np.round(np.random.randn(2), 2)
+        if 0 <= x[0] <= 1 and 0 <= x[1] <= 1:
+            break
+    return x
 
 
 def is_point_in_circle(circle_center, radius, test_point):

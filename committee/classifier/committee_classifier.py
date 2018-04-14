@@ -1,4 +1,6 @@
 import numpy as np
+import operator
+import math
 
 
 class CommitteeClassifier(object):
@@ -28,20 +30,23 @@ class CommitteeClassifier(object):
             w = np.sum(x_weights)
             w_e = np.dot(x_weights.T, s_mat).T
 
-            # note~ might need to exclude those that have already been chosen...use
-            # https://stackoverflow.com/questions/26057332/find-maximum-value-in-array-with-excluded-indices
-            best_classifier_idx = np.argmin(w_e)
+            w_e_dict = {}
+            for k in range(w_e.shape[0]):
+                if k not in self._committee.keys():
+                    w_e_dict[k] = w_e[k]
+
+            best_classifier_idx = min(w_e_dict.items(), key=operator.itemgetter(1))[0]
 
             e_m = w_e[best_classifier_idx] / w
-            alpha = 0.5 * np.log((1 - e_m) / e_m)
+            alpha = 0.5 * math.log((1 - e_m) / e_m)
 
             self._committee[best_classifier_idx] = {"model": classifiers_pool[best_classifier_idx], "alpha": alpha}
 
             for j in range(s_mat.shape[0]):
                 if s_mat[j][best_classifier_idx]:
-                    x_weights[j] = x_weights[j] * np.sqrt((1 - e_m) / e_m)
+                    x_weights[j] = x_weights[j] * math.sqrt((1 - e_m) / e_m)
                 else:
-                    x_weights[j] = x_weights[j] * np.sqrt(e_m / (1 - e_m))
+                    x_weights[j] = x_weights[j] * math.sqrt(e_m / (1 - e_m))
 
         return
 

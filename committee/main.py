@@ -5,11 +5,11 @@ import classifier.committee_classifier as adaboost
 
 
 def build_committee():
-    x, y = du.generate_data(11, circle_radius=0.35)
+    x, y = du.generate_data(25, circle_radius=0.40)
 
-    lines = du.generate_lines(50)
+    lines = du.generate_lines(20)
 
-    classifier = adaboost.CommitteeClassifier(x, y, lines, 25)
+    classifier = adaboost.CommitteeClassifier(x, y, lines, 10)
 
     predicted_y = []
     for i in x:
@@ -20,9 +20,18 @@ def build_committee():
     committee = classifier.get_committee()
     committee_classifiers = np.array([member["model"] for member in committee.values()])
 
-    visualize_results(x, y, np.array([]))
-    visualize_results(x, y, lines)
+    # visualize_results(x, y, np.array([]))
     visualize_results(x, predicted_y, committee_classifiers)
+    visualize_results(x, y, lines)
+
+    print("committee: \n", committee)
+    print("size of data: ", x.shape[0])
+
+    bins, counts = np.unique(y, return_counts=True)
+    print("Training Data Distribution: ", bins, ", ", counts)
+
+    bins, counts = np.unique(predicted_y, return_counts=True)
+    print("Training Data Distribution: ", bins, ", ", counts)
 
     return
 

@@ -47,11 +47,13 @@ class CommitteeClassifier(object):
             self._committee[best_classifier_idx] = {"classifier": classifiers_pool_dict[best_classifier_idx],
                                                     "alpha": alpha}
 
+            scale_up = math.sqrt((1 - e_m) / e_m)
+            scale_down = math.sqrt(e_m / (1 - e_m))
             for j in range(s_mat.shape[0]):
                 if s_mat[j][best_classifier_idx]:
-                    x_weights[j] = x_weights[j] * math.sqrt((1 - e_m) / e_m)
+                    x_weights[j] = x_weights[j] * scale_up
                 else:
-                    x_weights[j] = x_weights[j] * math.sqrt(e_m / (1 - e_m))
+                    x_weights[j] = x_weights[j] * scale_down
 
         return
 
@@ -112,7 +114,7 @@ class CommitteeClassifier(object):
             alpha = info["alpha"]
 
             product = np.dot(x_extended[:2], model)
-            predicted_classification = 1 if x_extended[2] > product else -1
-            committee_sum += alpha * predicted_classification * sign
+            predicted_classification = sign * (1 if x_extended[2] > product else -1)
+            committee_sum += alpha * predicted_classification
 
         return 1 if committee_sum >= 0 else -1

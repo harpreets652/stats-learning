@@ -6,11 +6,11 @@ import classifier.committee_classifier as adaboost
 
 def build_committee():
     # for 25, use .4, 11, use .35
-    x, y = du.generate_data(25, circle_radius=0.45)
+    x, y = du.generate_data(20, circle_radius=0.42)
 
     lines = du.generate_lines(50)
 
-    classifier = adaboost.CommitteeClassifier(x, y, lines, 6)
+    classifier = adaboost.CommitteeClassifier(x, y, lines, 4)
 
     predicted_y = []
     for i in x:

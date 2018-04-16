@@ -22,18 +22,24 @@ def visualize_2d_data(x, y, svm_classifier=None, show_decision_boundary=False):
     colors = {1: 'r', -1: 'b'}
     style = {-1: '.', 1: '+'}
 
+    sv_keys = {} if svm_classifier is None else svm_classifier.get_support_vectors().keys()
+
     for i in range(x.shape[0]):
         plt.scatter(x[i, 0], x[i, 1], color=colors[y[i]], marker=style[y[i]], s=40)
 
+        if i in sv_keys:
+            plt.scatter(x[i, 0], x[i, 1], facecolors='none', edgecolors='r', s=100)
+
     if show_decision_boundary:
         g = np.linspace(-4, 4, 4)
+        w, b = svm_classifier.get_weights()
+
         f_x = []
         for i in g:
-            f_x_i = svm_classifier._svm_function(i)
+            f_x_i = (i * w[0] + b) / -w[1]
             f_x.append(f_x_i)
 
-        f_x_arr = np.array(f_x)
-        plt.plot(g, f_x_arr, linestyle='-')
+        plt.plot(g, np.array(f_x), linestyle='-')
 
     plt.show()
 

@@ -50,6 +50,17 @@ class SVMClassifier(object):
     def get_support_vectors(self):
         return self._support_vectors
 
+    def get_weights(self):
+        w = np.array([])
+        for key, sv in self._support_vectors.items():
+            product = sv["alpha"] * sv["y"] * sv["x"]
+            if not w.size:
+                w = product
+            else:
+                w += product
+
+        return w, self._b
+
     def classify(self, x):
         f_x = self._svm_function(x)
         return 1 if f_x >= 0 else -1

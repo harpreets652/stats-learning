@@ -113,8 +113,11 @@ class CommitteeClassifier(object):
             sign = info["classifier"]["sign"]
             alpha = info["alpha"]
 
+            # Note~ teting x2 > mx1+b vs 0 < mx1+b+(-1)x2 BUT the reverse should be true based on the first eq.
+            # Note~ 0 > mx1 + b - x2
             product = np.dot(x_extended[:2], model)
             predicted_classification = sign * (1 if x_extended[2] > product else -1)
+            #Note~ something wrong here????
             committee_sum += alpha * predicted_classification
 
         return 1 if committee_sum >= 0 else -1

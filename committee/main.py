@@ -7,15 +7,23 @@ import classifier.committee_classifier as adaboost
 def build_committee():
     # for 25, use .4, 11, use .35
     x, y = du.generate_data(20, circle_radius=0.42)
+    
+    size_of_committee = 20
+    lines = du.generate_lines(size_of_committee)
 
-    lines = du.generate_lines(50)
+    classifier_dict = {}
+    for i in range(lines.shape[0]):
+        classifier_dict[i] = {"model": lines[i], "sign": 1}
 
-    classifier = adaboost.CommitteeClassifier(x, y, lines, 4)
+    classifier = adaboost.CommitteeClassifier(x, y, classifier_dict, size_of_committee)
 
     predicted_y = []
-    for i in x:
-        predicted_class = classifier.classify(i)
+    confusion = np.zeros((2, 2))
+    prediction_mapping = {-1: 0, 1: 1}
+    for k in range(x.shape[0]):
+        predicted_class = classifier.classify(x[k])
         predicted_y.append(predicted_class)
+        confusion[prediction_mapping[y[k]]][prediction_mapping[predicted_class]] += 1
 
     # visualize the results
     committee = classifier.get_committee()
@@ -28,11 +36,13 @@ def build_committee():
     print("committee: \n", committee)
     print("size of data: ", x.shape[0])
 
-    bins, counts = np.unique(y, return_counts=True)
-    print("Training Data Distribution: ", bins, ", ", counts)
-
-    bins, counts = np.unique(predicted_y, return_counts=True)
-    print("Training Data Distribution: ", bins, ", ", counts)
+    total = np.sum(confusion)
+    sum_class = np.sum(confusion, axis=1)
+    correct = np.trace(confusion)
+    print(f"total accuracy: {correct/total}")
+    print(f"negative accuracy: {confusion[0][0]/sum_class[0]}")
+    print(f"positive accuracy: {confusion[1][1]/sum_class[1]}")
+    print(f"Confusion Matrix: \n {confusion}")
 
     return
 
@@ -48,7 +58,7 @@ def visualize_results(x, y, lines):
         g = np.linspace(0, 1, 3)
         for line in lines:
             f_x = line[1] * g[:, np.newaxis] + line[0]
-            plt.plot(g, np.reshape(f_x, (f_x.shape[0])), linestyle='-')
+            plt.plot(g, np.reshape(f_x, (f_x.shape[0])), linestyle='-', alpha=0.4)
 
     plt.axis([-.1, 1.1, -.1, 1.1])
 

@@ -10,20 +10,16 @@ class CommitteeClassifier(object):
     http://www.inf.fu-berlin.de/inst/ag-ki/rojas_home/documents/tutorials/adaboost4.pdf
     """
 
-    def __init__(self, x_train, y_label, classifiers_pool, committee_size=5):
+    def __init__(self, x_train, y_label, classifiers_pool_dict, committee_size=5):
         """
         Constructs a committee of classifiers from the pool
 
         :param x_train: 2D np array (x1, x2)
         :param y_label: corresponding labels, {-1, 1}
-        :param classifiers_pool: ndarray of classifiers, in this case, 2D lines (coefficient_1, bias)
+        :param classifiers_pool_dict: dictionary of classifiers;  model (coefficient_1, bias), sign = {-1, 1}
         :param committee_size: size of the committee to construct
         """
-        assert len(classifiers_pool) >= committee_size
-
-        classifiers_pool_dict = {}
-        for i in range(classifiers_pool.shape[0]):
-            classifiers_pool_dict[i] = {"model": classifiers_pool[i], "sign": 1}
+        assert len(classifiers_pool_dict) >= committee_size
 
         s_mat = CommitteeClassifier._get_scouting_matrix(classifiers_pool_dict, x_train, y_label)
         self._committee = {}
@@ -34,21 +30,25 @@ class CommitteeClassifier(object):
             w = np.sum(x_weights)
             w_e = np.dot(x_weights.T, s_mat).T
 
+            # exclude classifiers already chosen
             w_e_dict = {}
             for k in range(w_e.shape[0]):
                 if k not in self._committee.keys():
                     w_e_dict[k] = w_e[k]
 
+            # find classifier that minimizes error
             best_classifier_idx = min(w_e_dict.items(), key=operator.itemgetter(1))[0]
 
+            # compute alpha
             e_m = w_e[best_classifier_idx] / w
             alpha = 0.5 * math.log((1 - e_m) / e_m)
 
             self._committee[best_classifier_idx] = {"classifier": classifiers_pool_dict[best_classifier_idx],
                                                     "alpha": alpha}
 
-            scale_up = math.sqrt((1 - e_m) / e_m)
-            scale_down = math.sqrt(e_m / (1 - e_m))
+            # update weights
+            scale_up = math.exp(alpha)
+            scale_down = math.exp(-alpha)
             for j in range(s_mat.shape[0]):
                 if s_mat[j][best_classifier_idx]:
                     x_weights[j] = x_weights[j] * scale_up
@@ -75,7 +75,7 @@ class CommitteeClassifier(object):
             product = np.dot(x[:, :2], classifier["model"][:, np.newaxis])
             hit_miss = []
             for i in range(x.shape[0]):
-                predicted_classification = 1 if x[i][2] > product[i] else -1
+                predicted_classification = classifier["sign"] * (1 if x[i][2] > product[i] else -1)
 
                 # a correct classification results in 0 (no cost incurred) and 1 otherwise
                 score = 0 if predicted_classification == y_label[i] else 1
@@ -83,17 +83,7 @@ class CommitteeClassifier(object):
 
             s_mat.append(np.array(hit_miss))
 
-        scout_mat = np.array(s_mat).T
-
-        total_misses = np.sum(scout_mat, axis=0)
-        for i in range(scout_mat.shape[1]):
-            if (total_misses[i] / x.shape[0]) > .55:
-                classifier_pool_dict[i]["sign"] = -1
-
-                for k in range(scout_mat.shape[0]):
-                    scout_mat[k][i] = 1 if scout_mat[k][i] == 0 else 0
-
-        return scout_mat
+        return np.array(s_mat).T
 
     def get_committee(self):
         return self._committee
@@ -113,11 +103,9 @@ class CommitteeClassifier(object):
             sign = info["classifier"]["sign"]
             alpha = info["alpha"]
 
-            # Note~ teting x2 > mx1+b vs 0 < mx1+b+(-1)x2 BUT the reverse should be true based on the first eq.
-            # Note~ 0 > mx1 + b - x2
+            # testing x2 > mx1+b vs 0 < -mx1-b+x2 BUT the reverse is true based on the first eq. 0 > mx1 + b - x2
             product = np.dot(x_extended[:2], model)
             predicted_classification = sign * (1 if x_extended[2] > product else -1)
-            #Note~ something wrong here????
             committee_sum += alpha * predicted_classification
 
         return 1 if committee_sum >= 0 else -1

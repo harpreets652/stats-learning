@@ -6,9 +6,10 @@ import classifier.committee_classifier as adaboost
 
 def build_committee():
     # for 25, use .4, 11, use .35
-    x, y = du.generate_data(20, circle_radius=0.42)
-    
-    size_of_committee = 20
+    x, y = du.generate_data(100, circle_radius=0.42)
+
+    size_of_committee = 1500
+    # lines = du.generate_square()
     lines = du.generate_lines(size_of_committee)
 
     classifier_dict = {}
@@ -30,8 +31,8 @@ def build_committee():
     committee_classifiers = np.array([member["classifier"]["model"] for member in committee.values()])
 
     # visualize_results(x, y, np.array([]))
-    visualize_results(x, predicted_y, committee_classifiers)
-    visualize_results(x, y, lines)
+    visualize_results(x, predicted_y, np.array([]))
+    visualize_results(x, y, np.array([]))
 
     print("committee: \n", committee)
     print("size of data: ", x.shape[0])

@@ -1,0 +1,7 @@
+size of data:  10000
+total accuracy: 0.8028
+negative accuracy: 0.7118755477651183
+positive accuracy: 0.8791390728476821
+Confusion Matrix:
+ [[ 3249.  1315.]
+ [  657.  4779.]]

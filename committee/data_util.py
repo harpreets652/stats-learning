@@ -45,6 +45,32 @@ def generate_lines(num_of_lines):
     return np.array(lines)
 
 
+def generate_square():
+    lines = []
+    x1 = np.array([0.0, 0.1])
+    x2 = np.array([0.1, 0.1])
+    coefficients = np.polyfit(x1, x2, 1)
+    lines.append((coefficients[1], coefficients[0]))
+
+    x1 = np.array([0.0, 0.1])
+    x2 = np.array([0.9, 0.9])
+    coefficients = np.polyfit(x1, x2, 1)
+    lines.append((coefficients[1], coefficients[0]))
+
+    x1 = np.array([0.1, 0.09999])
+    x2 = np.array([0.0, 0.1])
+    coefficients = np.polyfit(x1, x2, 1)
+    lines.append((coefficients[1], coefficients[0]))
+
+    x1 = np.array([0.9, 0.89999])
+    x2 = np.array([0.0, 0.1])
+    coefficients = np.polyfit(x1, x2, 1)
+    lines.append((coefficients[1], coefficients[0]))
+
+
+    return np.array(lines)
+
+
 def _get_rand_0_1():
     while True:
         x = np.round(np.random.random_sample(2), 2)

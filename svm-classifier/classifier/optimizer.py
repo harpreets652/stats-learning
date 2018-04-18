@@ -10,9 +10,7 @@ class SMO:
     http://cs229.stanford.edu/materials/smo.pdf
     """
 
-    MAX_ITERATIONS = 10000
-
-    def __init__(self, x, y, kernel, kernel_config, c, tol, max_iter):
+    def __init__(self, x, y, kernel, kernel_config, c, tol, eps, max_iter):
         """
         smo algorithm to find lagrange multipliers, w, and b
 
@@ -21,7 +19,8 @@ class SMO:
         :param kernel: function
         :param kernel_config: dictionary parameters to the kernel function
         :param c: regularization parameter
-        :param tol: tolerance value
+        :param tol: error tolerance value
+        :param eps: alpha tolerance value
         :param max_iter: max number of iterations over multipliers without changing
         """
 
@@ -31,11 +30,11 @@ class SMO:
         self._kernel_config = kernel_config
         self._c = c
         self._tol = tol
+        self._eps = eps
         self._max_iter = max_iter
 
         self._alpha_vec = np.zeros(x.shape[0])
         self._b = 0
-        self._w_vec = np.array([])
 
         return
 
@@ -44,47 +43,59 @@ class SMO:
         smo algorithm to find lagrange multipliers, w, and b
         """
 
-        num_iterations = 0
-        iter_counter = 0
-        while num_iterations < self._max_iter and iter_counter < SMO.MAX_ITERATIONS:
-            num_changed_alphas = 0
-            for i in range(self._x.shape[0]):
-                if self._evaluate_x(i):
-                    num_changed_alphas += 1
+        num_changed = 0
+        examine_all = True
 
-            iter_counter += 1
-            if num_changed_alphas == 0:
-                num_iterations += 1
+        while num_changed > 0 or examine_all:
+            num_changed = 0
+            if examine_all:
+                for i in range(self._x.shape[0]):
+                    if self._evaluate_step(i):
+                        num_changed += 1
             else:
-                num_iterations = 0
-            print(f"iteration: {iter_counter}, num_iterations: {num_iterations}")
+                for i, alpha in enumerate(self._alpha_vec):
+                    if alpha != 0 and alpha != self._c:
+                        if self._evaluate_step(i):
+                            num_changed += 1
+
+            if examine_all:
+                examine_all = False
+            elif num_changed == 0:
+                examine_all = True
 
         return self
 
-    def _evaluate_x(self, x_idx):
-        target_y = self._y[x_idx]
-        alpha_i = self._alpha_vec[x_idx]
-        error_i = self._svm_compute(x_idx) - target_y
+    def _evaluate_step(self, x_idx_2):
+        target_y_2 = self._y[x_idx_2]
+        alpha_2 = self._alpha_vec[x_idx_2]
+        error_2 = self._svm_compute(x_idx_2) - target_y_2
 
-        r_2 = error_i * target_y
-        if (r_2 < -self._tol and alpha_i < self._c) or (r_2 > self._tol and alpha_i > 0):
-            x_idx_2 = self._get_rand_index_excluding(x_idx)
-            return self._optimize_step(x_idx, x_idx_2)
+        r_2 = error_2 * target_y_2
+        if (r_2 < -self._tol and alpha_2 < self._c) or (r_2 > self._tol and alpha_2 > 0):
+            # note~ omitting first conditional in evaluation
+
+            # loop over all non-zero and non-c alpha starting from random point
+            non_z_c_idx = np.array([i for i, val in enumerate(self._alpha_vec) if val != 0 and val != self._c])
+            for x_idx_1 in np.roll(non_z_c_idx, random.randint(0, len(non_z_c_idx) - 1)):
+                if self._optimize_step(x_idx_1, x_idx_2):
+                    return True
+
+            # loop over all alphas starting from random point
+            for x_idx_1 in np.roll(self._alpha_vec, random.randint(0, self._alpha_vec.shape[0]) - 1):
+                if self._optimize_step(x_idx_1, x_idx_2):
+                    return True
 
         return False
 
-    def _get_rand_index_excluding(self, exclude_idx):
-        while True:
-            rand_idx = random.randint(0, self._x.shape[0] - 1)
-            if rand_idx != exclude_idx:
-                return rand_idx
-
     def _optimize_step(self, x_i, x_j):
-        error_i = self._svm_compute(x_i) - self._y[x_i]
-        error_j = self._svm_compute(x_j) - self._y[x_j]
+        if x_i == x_j:
+            return False
 
         alpha_i_old = self._alpha_vec[x_i]
         alpha_j_old = self._alpha_vec[x_j]
+
+        error_i = self._svm_compute(x_i) - self._y[x_i]
+        error_j = self._svm_compute(x_j) - self._y[x_j]
 
         if self._y[x_i] == self._y[x_j]:
             lower = max(0, alpha_i_old + alpha_j_old - self._c)
@@ -101,18 +112,35 @@ class SMO:
         kjj = self._kernel(self._x[x_j], self._x[x_j], self._kernel_config)
         eta = 2 * kij - kii - kjj
 
-        if eta >= 0:
-            return False
-
-        alpha_j_temp = alpha_j_old - ((self._y[x_j] * (error_i - error_j)) / eta)
-        if alpha_j_temp > upper:
-            self._alpha_vec[x_j] = upper
-        elif alpha_j_temp < lower:
-            self._alpha_vec[x_j] = lower
+        if eta < 0:
+            alpha_j_temp = alpha_j_old - ((self._y[x_j] * (error_i - error_j)) / eta)
+            if alpha_j_temp > upper:
+                self._alpha_vec[x_j] = upper
+            elif alpha_j_temp < lower:
+                self._alpha_vec[x_j] = lower
+            else:
+                self._alpha_vec[x_j] = alpha_j_temp
         else:
-            self._alpha_vec[x_j] = alpha_j_temp
+            alpha_vec_temp = self._alpha_vec.copy()
 
-        if math.fabs(self._alpha_vec[x_j] - alpha_j_old) < 10e-5:
+            alpha_vec_temp[x_j] = lower
+            low_obj = self._svm_compute(x_j)
+            alpha_vec_temp[x_j] = upper
+            hi_obj = self._svm_compute(x_j)
+
+            if low_obj > (hi_obj + self._eps):
+                self._alpha_vec[x_j] = lower
+            elif low_obj < (hi_obj - self._eps):
+                self._alpha_vec[x_j] = upper
+            else:
+                self._alpha_vec[x_j] = alpha_j_old
+
+        if self._alpha_vec[x_j] < 1e-8:
+            self._alpha_vec[x_j] = 0
+        elif self._alpha_vec[x_j] > (self._c - 1e-8):
+            self._alpha_vec[x_j] = self._c
+
+        if math.fabs(self._alpha_vec[x_j] - alpha_j_old) < self._eps * (self._alpha_vec[x_j] + alpha_j_old + self._eps):
             return False
 
         self._alpha_vec[x_i] = alpha_i_old + self._y[x_i] * self._y[x_j] * (alpha_j_old - self._alpha_vec[x_j])

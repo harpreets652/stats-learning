@@ -8,7 +8,7 @@ def generate_linearly_separated_data(num_samples=100, num_of_features=3, class_s
                                        n_features=num_of_features,
                                        n_informative=num_of_features,
                                        n_redundant=0,
-                                       n_clusters_per_class=2,
+                                       n_clusters_per_class=1,
                                        class_sep=class_separability,
                                        flip_y=0,
                                        shift=None)
@@ -36,7 +36,7 @@ def visualize_2d_data(x, y, svm_classifier=None, show_decision_boundary=False):
 
         z = []
         for i in pairs:
-            f_x = svm_classifier._decision_function(i)
+            f_x = svm_classifier.decision_function(i)
             z.append(f_x)
 
         z_arr = np.array(z)

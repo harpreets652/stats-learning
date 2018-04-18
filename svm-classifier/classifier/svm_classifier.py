@@ -22,7 +22,6 @@ class SVMClassifier(object):
             - c: regularization param, slack variable
             - tol: error tolerance
             - eps: alpha tolerance
-            - max_iter: max num of iterations to iterate over alpha's without changing
         """
 
         kernel_str = kwargs.pop("kernel", "rbf")
@@ -33,10 +32,9 @@ class SVMClassifier(object):
         self._kernel_config = kwargs.pop("kernel_config", {"gamma": 0.5})
 
         c = kwargs.pop("c", 0.01)
-        tol = kwargs.pop("tol", 0.001)
-        eps = kwargs.pop("eps", 0.001)
-        max_iter = kwargs.pop("max_iter", 100)
-        smo = opt.SMO(x_train, y_label, self._kernel, self._kernel_config, c, tol, eps, max_iter)
+        tol = kwargs.pop("tol", 0.01)
+        eps = kwargs.pop("eps", 0.01)
+        smo = opt.SMO(x_train, y_label, self._kernel, self._kernel_config, c, tol, eps)
 
         alphas, bias = smo.execute().get_model()
 

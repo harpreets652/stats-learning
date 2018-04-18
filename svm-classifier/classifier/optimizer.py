@@ -10,7 +10,7 @@ class SMO:
     http://cs229.stanford.edu/materials/smo.pdf
     """
 
-    def __init__(self, x, y, kernel, kernel_config, c, tol, eps, max_iter):
+    def __init__(self, x, y, kernel, kernel_config, c, tol, eps):
         """
         smo algorithm to find lagrange multipliers, w, and b
 
@@ -21,7 +21,6 @@ class SMO:
         :param c: regularization parameter
         :param tol: error tolerance value
         :param eps: alpha tolerance value
-        :param max_iter: max number of iterations over multipliers without changing
         """
 
         self._x = x
@@ -31,7 +30,6 @@ class SMO:
         self._c = c
         self._tol = tol
         self._eps = eps
-        self._max_iter = max_iter
 
         self._alpha_vec = np.zeros(x.shape[0])
         self._b = 0
@@ -46,6 +44,7 @@ class SMO:
         num_changed = 0
         examine_all = True
 
+        iter_counter = 0
         while num_changed > 0 or examine_all:
             num_changed = 0
             if examine_all:
@@ -58,6 +57,8 @@ class SMO:
                         if self._evaluate_step(i):
                             num_changed += 1
 
+            iter_counter += 1
+            print(f"Iteration: {iter_counter}, examine all: {examine_all}, number changed: {num_changed}")
             if examine_all:
                 examine_all = False
             elif num_changed == 0:
@@ -76,12 +77,14 @@ class SMO:
 
             # loop over all non-zero and non-c alpha starting from random point
             non_z_c_idx = np.array([i for i, val in enumerate(self._alpha_vec) if val != 0 and val != self._c])
-            for x_idx_1 in np.roll(non_z_c_idx, random.randint(0, len(non_z_c_idx) - 1)):
-                if self._optimize_step(x_idx_1, x_idx_2):
-                    return True
+            if non_z_c_idx.size:
+                for x_idx_1 in np.roll(non_z_c_idx, random.randint(0, non_z_c_idx.shape[0] - 1)):
+                    if self._optimize_step(x_idx_1, x_idx_2):
+                        return True
 
             # loop over all alphas starting from random point
-            for x_idx_1 in np.roll(self._alpha_vec, random.randint(0, self._alpha_vec.shape[0]) - 1):
+            for x_idx_1 in np.roll(np.arange(0, self._alpha_vec.shape[0]),
+                                   random.randint(0, self._alpha_vec.shape[0]) - 1):
                 if self._optimize_step(x_idx_1, x_idx_2):
                     return True
 

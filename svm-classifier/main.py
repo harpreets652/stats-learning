@@ -12,9 +12,8 @@ def main():
 
     classifier = svm.SVMClassifier(x,
                                    y,
-                                   c=0.1,
-                                   max_iter=400,
-                                   kernel="rbf",
+                                   c=1000.0,
+                                   kernel="linear",
                                    kernel_config={"gamma": 0.5})
 
     predicted_y = []

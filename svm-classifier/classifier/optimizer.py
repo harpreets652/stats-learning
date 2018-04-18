@@ -7,7 +7,7 @@ class SMO:
     """
     class that optimizes SVM model
     - simplified version of SMO
-    http://cs229.stanford.edu/materials/smo.pdf
+    https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/smo-book.pdf
     """
 
     def __init__(self, x, y, kernel, kernel_config, c, tol, eps):

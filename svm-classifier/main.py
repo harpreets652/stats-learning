@@ -6,14 +6,14 @@ import classifier.svm_classifier as svm
 def main():
     x, y = du.generate_linearly_separated_data(num_samples=200,
                                                num_of_features=2,
-                                               class_separability=1.0)
+                                               class_separability=0.9)
 
     du.visualize_2d_data(x, y)
 
     classifier = svm.SVMClassifier(x,
                                    y,
-                                   c=1000.0,
-                                   kernel="linear",
+                                   c=100.0,
+                                   kernel="rbf",
                                    kernel_config={"gamma": 0.5})
 
     predicted_y = []

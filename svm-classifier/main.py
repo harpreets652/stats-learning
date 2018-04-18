@@ -14,8 +14,8 @@ def main():
                                    y,
                                    c=0.1,
                                    max_iter=400,
-                                   kernel="polynomial",
-                                   kernel_config={"d": 2})
+                                   kernel="rbf",
+                                   kernel_config={"gamma": 0.5})
 
     predicted_y = []
     for i in x:

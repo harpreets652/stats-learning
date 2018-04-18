@@ -31,15 +31,18 @@ def visualize_2d_data(x, y, svm_classifier=None, show_decision_boundary=False):
             plt.scatter(x[i, 0], x[i, 1], facecolors='none', edgecolors='r', s=100)
 
     if show_decision_boundary:
-        g = np.linspace(-4, 4, 4)
-        w, b = svm_classifier.get_weights()
+        xx, yy = np.meshgrid(np.linspace(-5, 5, 100), np.linspace(-5, 5, 200))
+        pairs = np.c_[xx.ravel(), yy.ravel()]
 
-        f_x = []
-        for i in g:
-            f_x_i = (i * w[0] + b) / -w[1]
-            f_x.append(f_x_i)
+        z = []
+        for i in pairs:
+            f_x = svm_classifier._decision_function(i)
+            z.append(f_x)
 
-        plt.plot(g, np.array(f_x), linestyle='-')
+        z_arr = np.array(z)
+        z_arr = np.reshape(z_arr, xx.shape)
+        plt.contourf(xx, yy, z_arr, cmap=plt.cm.PuBu, alpha=0.5)
+        plt.contour(xx, yy, z_arr, levels=[0], linewidths=2, colors='darkred')
 
     plt.show()
 

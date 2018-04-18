@@ -62,10 +62,10 @@ class SVMClassifier(object):
         return w, self._b
 
     def classify(self, x):
-        f_x = self._svm_function(x)
+        f_x = self._decision_function(x)
         return 1 if f_x >= 0 else -1
 
-    def _svm_function(self, x):
+    def _decision_function(self, x):
         svm_sum = 0
         for key, sv in self._support_vectors.items():
             svm_sum += sv["alpha"] * sv["y"] * self._kernel(sv["x"], x, self._kernel_config)

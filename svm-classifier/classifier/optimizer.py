@@ -140,5 +140,4 @@ class SMO:
         return svm_sum + self._b
 
     def get_model(self):
-        # note~ not sure about w
         return self._alpha_vec, self._b

@@ -1,4 +1,3 @@
-import numpy as np
 import classifier.optimizer as opt
 import classifier.kernels as kernels
 

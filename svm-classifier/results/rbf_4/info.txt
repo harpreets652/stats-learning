@@ -1,0 +1,9 @@
+Confusion Matrix:
+ [[ 97.   3.]
+ [  4.  96.]]
+Number of data points: 200
+Number of support vectors: 23
+Kernel: rbf {gamma=0.1}
+c=25.0
+error tolerance=0.01
+alpha tolerance=0.01

@@ -13,9 +13,9 @@ def main():
 
     classifier = svm.SVMClassifier(x,
                                    y,
-                                   c=0.1,
-                                   kernel="linear",
-                                   kernel_config={"gamma": 0.5})
+                                   c=25.0,
+                                   kernel="rbf",
+                                   kernel_config={"gamma": 0.9})
 
     predicted_y = []
     confusion = np.zeros((2, 2))

@@ -1,1 +1,0 @@
-using simplified version of SMO

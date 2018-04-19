@@ -4,23 +4,30 @@ import classifier.svm_classifier as svm
 
 
 def main():
-    x, y = du.generate_linearly_separated_data(num_samples=200,
+    num_samples = 200
+    x, y = du.generate_linearly_separated_data(num_samples=num_samples,
                                                num_of_features=2,
-                                               class_separability=0.9)
+                                               class_separability=0.8)
 
     du.visualize_2d_data(x, y)
 
     classifier = svm.SVMClassifier(x,
                                    y,
-                                   c=100.0,
-                                   kernel="rbf",
+                                   c=0.1,
+                                   kernel="linear",
                                    kernel_config={"gamma": 0.5})
 
     predicted_y = []
-    for i in x:
-        predicted_class = classifier.classify(i)
+    confusion = np.zeros((2, 2))
+    confusion_mapping = {-1: 0, 1: 1}
+    for i in range(x.shape[0]):
+        predicted_class = classifier.classify(x[i])
+
+        confusion[confusion_mapping[y[i]]][confusion_mapping[predicted_class]] += 1
         predicted_y.append(predicted_class)
 
+    print("Confusion Matrix: \n", confusion)
+    print(f"Number of data points: {num_samples}\nNumber of support vectors: {len(classifier.get_support_vectors())}")
     du.visualize_2d_data(x, np.array(predicted_y), classifier, True)
 
     return

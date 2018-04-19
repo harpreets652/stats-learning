@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 def generate_linearly_separated_data(num_samples=100, num_of_features=3, class_separability=1.0):
     x, y_temp = ds.make_classification(n_samples=num_samples,
                                        n_features=num_of_features,
-                                       n_informative=num_of_features,
+                                       n_informative=num_of_features - 1,
                                        n_redundant=0,
                                        n_clusters_per_class=1,
                                        class_sep=class_separability,
@@ -31,7 +31,10 @@ def visualize_2d_data(x, y, svm_classifier=None, show_decision_boundary=False):
             plt.scatter(x[i, 0], x[i, 1], facecolors='none', edgecolors='r', s=100)
 
     if show_decision_boundary:
-        xx, yy = np.meshgrid(np.linspace(-5, 5, 100), np.linspace(-5, 5, 200))
+        min_vals = np.amin(x, axis=0)
+        max_vals = np.amax(x, axis=0)
+        xx, yy = np.meshgrid(np.linspace(min_vals[0] - 0.1, max_vals[0] + 0.1, 100),
+                             np.linspace(min_vals[1] - 0.1, max_vals[1] + 0.1, 200))
         pairs = np.c_[xx.ravel(), yy.ravel()]
 
         z = []

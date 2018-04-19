@@ -19,7 +19,8 @@ class SVMClassifier(object):
         :param kwargs: arguments to SMO
             - kernel: 'rbf' | 'polynomial'
             - kernel_config: 'gamma' (for rbf) | 'd' (for poly)
-            - c: regularization param, slack variable
+            - c: regularization param, large val results in larger margin (sensitive to outliers)
+                --> cost of allowing points within margin (low val -> low cost -> more support vectors)
             - tol: error tolerance
             - eps: alpha tolerance
         """

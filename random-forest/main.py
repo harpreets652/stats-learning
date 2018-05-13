@@ -9,8 +9,9 @@ def main():
     (x_train, y_train), (x_test, y_test) = datasets.cifar10.load_data()
 
     # bag of features
-    img_feature_gen = bof.BagOfFeaturesTransform(patch_size=16, num_clusters=10)
+    img_feature_gen = bof.BagOfFeaturesTransform(patch_size=16, num_clusters=256)
     training_x = img_feature_gen.initialize(x_train)
+    print("Image features extracted")
 
     classifier = RandomForestClassifier(n_estimators=10, criterion="gini", min_samples_split=2, n_jobs=-1)
     classifier.fit(training_x, np.ravel(y_train))

@@ -1,6 +1,7 @@
 import cv2
 from cv2 import xfeatures2d as non_free
 import math
+import numpy as np
 
 
 class BagOfFeaturesTransform:
@@ -31,15 +32,15 @@ class BagOfFeaturesTransform:
         """
         Initializes the bag of words descriptor and returns the mapped results of image_data
 
-        :param image_data: list [label, 3D image]
+        :param image_data: ndarray [n, 3D image]
         :return: list [label, [1D image descriptor]]
         """
         termination_criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.1)
         bow_model = cv2.BOWKMeansTrainer(self._num_clusters, termination_criteria)
 
         key_point_tensor = {}
-        for i in range(len(image_data)):
-            cv_image = image_data[i][1]
+        for i in range(image_data.shape[0]):
+            cv_image = image_data[i]
             descriptors, key_points = BagOfFeaturesTransform.extract_features_descriptors(cv_image, self._patch_size)
 
             key_point_tensor[i] = key_points
@@ -53,22 +54,20 @@ class BagOfFeaturesTransform:
 
         training_x = []
         for img_idx, img_descriptors in key_point_tensor.items():
-            image_quantized_descriptor = self._img_descriptor_mapper.compute(image_data[img_idx][1], img_descriptors)
-            training_x.append((image_data[img_idx][0], image_quantized_descriptor))
+            image_quantized_descriptor = self._img_descriptor_mapper.compute(image_data[img_idx], img_descriptors)
+            training_x.append(image_quantized_descriptor)
 
-        return training_x
+        return np.vstack(training_x)
 
-    def get_image_descriptor(self, image_path):
+    def get_image_descriptor(self, cv_image):
         """
         Compute quantized image descriptor based on bag of features of the training data
 
-        :param image_path: (string) path to the image
+        :param cv_image: (string) path to the image
         :return: (ndarray) numpy array
         """
 
-        cv_image = BagOfFeaturesTransform.read_image(image_path)
         key_points = BagOfFeaturesTransform.extract_features(cv_image, self._patch_size)
-
         return self._img_descriptor_mapper.compute(cv_image, key_points)
 
     @staticmethod

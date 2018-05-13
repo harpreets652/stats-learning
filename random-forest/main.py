@@ -32,6 +32,10 @@ def main():
 
     print("confusion: \n", confusion)
 
+    total_test = x_test.shape[0]
+    accuracy = np.trace(confusion) / total_test
+    print(f"Test Accuracy: {accuracy}")
+
     return
 
 

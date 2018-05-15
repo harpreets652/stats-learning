@@ -10,7 +10,7 @@ def main():
     (x_train, y_train), (x_test, y_test) = datasets.cifar10.load_data()
 
     # bag of features
-    img_feature_gen = bof.BagOfFeaturesTransform(patch_size=8, num_clusters=1024)
+    img_feature_gen = bof.BagOfFeaturesTransform(patch_size=16, num_clusters=512)
     training_x = img_feature_gen.initialize(x_train)
 
     # deep features
